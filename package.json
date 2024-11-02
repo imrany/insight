@@ -3,6 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "license":"MPL-2.0",
+  "author":"imrany",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
