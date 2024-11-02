@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from 'react'
-import Layout from './pages/Layout';
+import Layout from '@/components/Layout';
 import NotFound from './pages/NotFound';
 import NotSupported from './pages/NotSupported';
 import Welcome from "./pages/Welcome";
@@ -55,6 +55,7 @@ function App() {
     }else {
         console.error('Speech recognition not supported');
     }
+
     window.onresize=function(){
         screen.width>1080?setIsSupported(false):setIsSupported(true)
     }
