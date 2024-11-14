@@ -14,7 +14,7 @@ export default function Hero(){
             >
                 <defs>
                     <pattern id=":Rs57qbt6ja:" width={20} height={20} patternUnits="userSpaceOnUse" x="-1" y="-1">
-                        <path d="M.5 20V.5H20" fill="none" stroke-dasharray="0"></path>
+                        <path d="M.5 20V.5H20" fill="none" strokeDasharray="0"></path>
                     </pattern>
                 </defs>
                 <rect width="100%" height="100%" strokeWidth="0" fill="url(#:Rs57qbt6ja:)"></rect>
