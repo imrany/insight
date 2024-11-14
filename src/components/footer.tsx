@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 
 export default function Footer(){
     return(
-        <footer className="flex bg-[var(--primary-01)] justify-center md:justify-between w-screen h-[300px] py-12 sm:px-6 md:px-12 text-sm font-[family-name:var(--font-geist-mono)] text-white">
+        <footer className="flex max-md:flex-col bg-[var(--primary-01)] justify-center md:justify-between w-screen h-[300px] py-12 px-6 max-md:gap-y-8 md:px-12 text-sm font-[family-name:var(--font-geist-mono)] text-white">
             <div className="flex flex-col gap-1">
                 <p>Insight.ai</p>
                 <p className="flex gap-2 items-center text-xs">

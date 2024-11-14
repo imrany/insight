@@ -19,21 +19,21 @@ export default function Hero(){
                 </defs>
                 <rect width="100%" height="100%" strokeWidth="0" fill="url(#:Rs57qbt6ja:)"></rect>
             </svg>
-            <div className="flex flex-col gap-3 text-center w-[480px]">
-                <p className="font-semibold text-4xl text-[var(--primary-01)]">
+            <div className="flex flex-col gap-3 text-center md:w-[480px] w-[90vw]">
+                <p className="font-semibold md:text-4xl text-3xl text-[var(--primary-01)]">
                     Unlocking Human Potential With Generative AI. 
                 </p>
-                <p className="text-gray-500 font-[family-name:var(--font-geist-mono)]">
-                    Insight.ai is web-app that combines both AI and voice input for fast prompting.
+                <p className="text-gray-600 text-sm font-[family-name:var(--font-geist-mono)]">
+                    Insight.ai is an AI-powered virtual assistants that combines both Generative AI and Speech-to-Text for fast prompting.
                 </p>
             </div>
-            <div className="flex gap-2">
-                <Button className="bg-[var(--primary-01)] w-[130px] hover:bg-[var(--primary-01)]" asChild>
+            <div className="flex gap-2 max-md:flex-col">
+                <Button className="bg-[var(--primary-01)] w-[130px] max-md:w-[80vw] hover:bg-[var(--primary-01)]" asChild>
                     <Link href="/sign-up">
                         Get Started
                     </Link>
                 </Button>
-                <Button variant="outline" className="hover:text-[var(--primary-01)] w-[130px] border-[1px] border-dashed border-[var(--primary-01)]" asChild>
+                <Button variant="outline" className="hover:text-[var(--primary-01)] w-[130px] max-md:w-[80vw] border-[1px] border-dashed border-[var(--primary-01)]" asChild>
                     <Link href="/sign-in">
                         Sign in
                     </Link>

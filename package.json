@@ -43,6 +43,7 @@
     "react-markdown": "^9.0.1",
     "react-spring": "^9.7.4",
     "react-sticky-el": "^2.1.1",
+    "recharts": "^2.13.3",
     "sequelize": "^6.37.5",
     "sqlite3": "^5.1.7",
     "tailwind-merge": "^2.5.4",
