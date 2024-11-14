@@ -1,5 +1,5 @@
 {
-  "name": "mass-essays",
+  "name": "insight-ai",
   "version": "0.1.0",
   "private": true,
   "author": "imrany",
@@ -12,12 +12,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/imrany/mass-essays"
+    "url": "https://github.com/imrany/insight"
   },
   "keywords": [
     "Voice assistance",
-    "Artificial Intelligence",
-    "Essays"
+    "Artificial Intelligence"
   ],
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",

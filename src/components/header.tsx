@@ -79,12 +79,20 @@ export default function Header() {
   };
 
   
-  window.onresize=function(){
-    screen.width>768?setIsMobile(false):setIsMobile(true)
+  function checkScreen(){
+    if(screen.width>768){
+        setIsMobile(false)
+    }else{
+        setIsMobile(true)
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    window.onresize=checkScreen
   }
 
   useEffect(()=>{
-    screen.width>768?setIsMobile(false):setIsMobile(true)
+    checkScreen()
   },[screen.width])
   return (
     <>
