@@ -35,7 +35,7 @@ export default function Header() {
     },
     {
         label:"Contact us",
-        href:"mailto:imranmat254@gmail.com",
+        href:"mailto:imranmat254@gmail.com?subject=Mail from Insight.ai",
         className:"hover:text-[var(--primary-01)]",
         variant:"link"
     },

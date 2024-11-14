@@ -24,7 +24,7 @@ export default function Body() {
     }
  ]
   return (
-    <div className="flex font-[family-name:var(--font-geist-sans)] flex-col w-screen border-[1px] border-dashed border-[var(--primary-01)] py-10 justify-center items-center max-md:py-8 max-md:px-3">
+    <div className="flex font-[family-name:var(--font-geist-sans)] flex-col w-screen border-[1px] border-dashed border-[var(--primary-01)] py-10 justify-center items-center max-md:py-8 md:px-3">
         <div className="flex flex-col items-center justify-center gap-1 mb-6">
             <p className="text-3xl font-semibold text-[var(--primary-01)]">Features</p>
             <p className="text-gray-600 text-sm">
