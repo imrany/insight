@@ -9,7 +9,7 @@ export default function RootLayout ({
   return (
     <div className="flex gap-2 w-screen h-screen font-[family-name:var(--font-geist-sans)]">
         <AppSidebar/>
-        <div className="flex-grow p-[20px]">
+        <div className="flex-grow w-full md:p-[20px] max-md:pt-[20px]">
             {children}
         </div>
     </div>
