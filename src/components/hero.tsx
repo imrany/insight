@@ -5,7 +5,7 @@ export default function Hero(){
     return(
         <div
             style={{opacity: 1, filter: "blur(0px)"}} 
-            className="flex font-[family-name:var(--font-geist-sans)] gap-9 flex-col justify-center items-center h-[70vh] w-screen bg-gradient-to-t from-blue-100/20 dark:from-blue-900/5"
+            className="flex font-[family-name:var(--font-geist-sans)] gap-9 flex-col justify-center items-center mt-[53px] h-[70vh] w-screen bg-gradient-to-t from-blue-100/20 dark:from-blue-900/5"
         >
             <svg 
                 aria-hidden

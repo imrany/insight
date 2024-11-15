@@ -96,8 +96,8 @@ export default function Header() {
   },[screen.width])
   return (
     <>
-        <header className="font-[family-name:var(--font-geist-sans)] z-10 w-screen flex items-center justify-center">
-            <nav className="flex justify-between items-center border-b-[1px] border-dashed border-[var(--primary-01)] w-screen py-2 px-4">
+        <header className="font-[family-name:var(--font-geist-sans)] bg-[var(--body-bg)] z-10 fixed top-0 left-0 right-0">
+            <nav className="flex justify-between items-center border-b-[1px] border-dashed border-[var(--primary-01)] w-screen py-2 px-4 md:px-5">
                 <Link href="/welcome" className="flex gap-2 text-[var(--primary-01)] font-semibold">
                     insight.ai
                 </Link>

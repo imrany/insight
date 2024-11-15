@@ -39,6 +39,7 @@ body {
     /* custom theme */
     --primary-01:#6D3BFF;
     --bg-body:#e8e5d933;
+    --body-bg:white;
     /* --primary-01:#084ccf; */
     --shadow-default: 5px 5px 0 rgba(7, 77, 207, .05), -5px -5px 0 rgba(7, 77, 207, .05);
     --shadow-alt: 5px 5px 0 rgba(7, 77, 207, .05);

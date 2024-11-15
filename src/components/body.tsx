@@ -31,7 +31,7 @@ export default function Body() {
                 You would benefit from the following features:
             </p>
         </div>
-        <Card>
+        <Card className="shadow-[var(--shadow-default)]">
             <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
                 <div className="flex flex-col md:grid md:grid-cols-3">
                     {details.map((detail) => {
