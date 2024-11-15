@@ -11,8 +11,57 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function SignUp() {
+    const router = useRouter()
+    const [error,setError]=useState('')
+    async function handleSignUp(e:any) {
+        try{
+            e.preventDefault()
+            if(e.target.confirm.value!==e.target.password.value){
+                setError("Password doesn't match!")
+            }else{
+                const url="/api/auth/sign_up"
+                const response=await fetch(url,{
+                    method:"POST",
+                    headers:{
+                        "content-type":"application/json"
+                    },
+                    body:JSON.stringify({
+                        username:e.target.username.value,
+                        password:e.target.confirm.value,
+                        email:e.target.email.value
+                    })
+                })
+                const parseRes=await response.json()
+                if(parseRes.error){
+                    setError(parseRes.error)
+                }else{
+                    const data:any=parseRes.data
+                    console.log(data)
+                    const stringifyData=JSON.stringify(data)
+                    localStorage.setItem("user-details",stringifyData)
+                    router.push('/home')
+                }
+            }
+        }catch(error:any){
+            console.log(error.message)
+            setError(error.message)
+        }
+    }
+
+    function checkAuth(){
+        const stringifyData=localStorage.getItem("user-details")
+        if(stringifyData){
+            router.push("/home")
+        }
+    }
+
+    useEffect(()=>{
+        checkAuth()
+    })
   return (
     <div className="flex font-[family-name:var(--font-geist-sans)] items-center flex-col h-screen w-screen  bg-gradient-to-t from-blue-100/20 dark:from-blue-900/5">
         <svg 
@@ -34,11 +83,24 @@ export default function SignUp() {
                     <CardDescription>Get started by creating an account.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form>
+                    <p className="text-sm text-red-500">{error}</p>
+                    <form onSubmit={handleSignUp}>
                         <div className="grid w-full items-center gap-4">
                             <div className="flex flex-col space-y-1.5">
+                                <Label htmlFor="username" className="text-[var(--primary-01)] font-semibold">Username</Label>
+                                <Input id="username" name="username" type="text" placeholder="Enter your preferred username" className="border-[var(--primary-01)] outline-[1px] active:outline-[var(--primary-01)] focus:border-[var(--primary-01)] outline-[var(--primary-01)]" required/>
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
                                 <Label htmlFor="email" className="text-[var(--primary-01)] font-semibold">Email</Label>
-                                <Input id="email" type="email" placeholder="example@gmail.com" className="border-[var(--primary-01)] outline-[1px] active:outline-[var(--primary-01)] focus:border-[var(--primary-01)] outline-[var(--primary-01)]" required/>
+                                <Input id="email" name="email" type="email" placeholder="example@gmail.com" className="border-[var(--primary-01)] outline-[1px] active:outline-[var(--primary-01)] focus:border-[var(--primary-01)] outline-[var(--primary-01)]" required/>
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
+                                <Label htmlFor="password" className="text-[var(--primary-01)] font-semibold">Password</Label>
+                                <Input id="password" name="password" minLength={8} maxLength={24} type="password" placeholder="Enter password" className="border-[var(--primary-01)] outline-[1px] active:outline-[var(--primary-01)] focus:border-[var(--primary-01)] outline-[var(--primary-01)]" required/>
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
+                                <Label htmlFor="confirm" className="text-[var(--primary-01)] font-semibold">Confirm password</Label>
+                                <Input id="confirm" name="confirm" minLength={8} maxLength={24} type="password" placeholder="Confirm password" className="border-[var(--primary-01)] outline-[1px] active:outline-[var(--primary-01)] focus:border-[var(--primary-01)] outline-[var(--primary-01)]" required/>
                             </div>
                             <Button type="submit" className="h-[40px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)]">Continue</Button>
                             <p className="text-sm text-gray-500 text-center">Or sign up with</p>

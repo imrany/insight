@@ -11,7 +11,7 @@ body {
 .sidebar {
   width: 250px; /* Adjust the width as needed */
   color: var(--text-primary-01);
-  transition: width 0.3s ease;
+  transition: width 0.3s ease-in-out;
 }
 
 .sidebar.open {
@@ -48,7 +48,6 @@ body {
 
     /* custom theme */
     --primary-01:#6D3BFF;
-    --bg-body:#e8e5d933;
     --body-bg:white;
     --text-primary-01:white;
     --text-primary-02:black;

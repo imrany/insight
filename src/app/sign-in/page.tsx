@@ -11,8 +11,52 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function SignIn() {
+    const router = useRouter()
+    const [error,setError]=useState("")
+    async function handleSignIn(e:any) {
+        try{
+            e.preventDefault()
+            const url="/api/auth/sign_in"
+            const response=await fetch(url,{
+                method:"POST",
+                headers:{
+                    "content-type":"application/json"
+                },
+                body:JSON.stringify({
+                    password:e.target.confirm.value,
+                    email:e.target.email.value
+                })
+            })
+            const parseRes=await response.json()
+            if(parseRes.error){
+                setError(parseRes.error)
+            }else{
+                const data:any=parseRes.data
+                console.log(data)
+                const stringifyData=JSON.stringify(data)
+                localStorage.setItem("user-details",stringifyData)
+                router.push('/home')
+            }
+        }catch(error:any){
+            setError(error.message)
+            console.log(error.message)
+        }
+    }
+
+    function checkAuth(){
+        const stringifyData=localStorage.getItem("user-details")
+        if(stringifyData){
+            router.push("/home")
+        }
+    }
+
+    useEffect(()=>{
+        checkAuth()
+    })
   return (
     <div className="flex font-[family-name:var(--font-geist-sans)] items-center flex-col h-screen w-screen  bg-gradient-to-t from-blue-100/20 dark:from-blue-900/5">
         <svg 
@@ -34,15 +78,16 @@ export default function SignIn() {
                     <CardDescription>Get started by sign in to your account.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form>
+                    <p className="text-sm text-red-500">{error}</p>
+                    <form onSubmit={handleSignIn}>
                         <div className="grid w-full items-center gap-4">
                             <div className="flex flex-col space-y-1.5">
                                 <Label htmlFor="email" className="text-[var(--primary-01)] font-semibold">Email</Label>
-                                <Input id="email" type="email" placeholder="example@gmail.com" className="border-[var(--primary-01)] outline-[1px] active:outline-[var(--primary-01)] focus:border-[var(--primary-01)] outline-[var(--primary-01)]" required/>
+                                <Input id="email" name="email" type="email" placeholder="example@gmail.com" className="border-[var(--primary-01)] outline-[1px] active:outline-[var(--primary-01)] focus:border-[var(--primary-01)] outline-[var(--primary-01)]" required/>
                             </div>
                             <div className="flex flex-col space-y-1.5">
                                 <Label htmlFor="password" className="text-[var(--primary-01)]  font-semibold">Password</Label>
-                                <Input id="password" minLength={8} maxLength={24} type="password" className="border-[var(--primary-01)] outline-[1px] active:outline-[var(--primary-01)] focus:border-[var(--primary-01)] outline-[var(--primary-01)]" placeholder="Enter your password" required/>
+                                <Input id="password" name="password" minLength={8} maxLength={24} type="password" className="border-[var(--primary-01)] outline-[1px] active:outline-[var(--primary-01)] focus:border-[var(--primary-01)] outline-[var(--primary-01)]" placeholder="Enter your password" required/>
                             </div>
                             <Button variant="link" className="ml-auto text-[var(--primary-01)]" asChild>
                                 <Link href="#">Forgot password</Link>
