@@ -93,7 +93,7 @@ export default function Header() {
 
   useEffect(()=>{
     checkScreen()
-  },[screen.width])
+  })
   return (
     <>
         <header className="font-[family-name:var(--font-geist-sans)] bg-[var(--body-bg)] z-10 fixed top-0 left-0 right-0">
