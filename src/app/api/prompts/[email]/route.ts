@@ -24,7 +24,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const email = (await params).email
     const data: any = await selectPrompts(email);
     if(data.length>0){
-        return Response.json({prompts:data})
+        return Response.json({
+            msg:`Welcome ${data[0].username}`,
+            data
+        })
     }else{
       return NextResponse.json({error:`No record found`},{status:404})
     }
