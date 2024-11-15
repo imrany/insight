@@ -16,6 +16,7 @@ import { useEffect, useState } from "react"
 
 export default function SignUp() {
     const router = useRouter()
+    const [isDisabled,setIsDisabled]=useState(false)
     const [error,setError]=useState('')
     async function handleSignUp(e:any) {
         try{
@@ -23,6 +24,7 @@ export default function SignUp() {
             if(e.target.confirm.value!==e.target.password.value){
                 setError("Password doesn't match!")
             }else{
+                setIsDisabled(true)    
                 const url="/api/auth/sign_up"
                 const response=await fetch(url,{
                     method:"POST",
@@ -38,6 +40,7 @@ export default function SignUp() {
                 const parseRes=await response.json()
                 if(parseRes.error){
                     setError(parseRes.error)
+                    setIsDisabled(false)    
                 }else{
                     const data:any=parseRes.data
                     console.log(data)
@@ -47,6 +50,7 @@ export default function SignUp() {
                 }
             }
         }catch(error:any){
+            setIsDisabled(false)    
             console.log(error.message)
             setError(error.message)
         }
@@ -83,7 +87,9 @@ export default function SignUp() {
                     <CardDescription>Get started by creating an account.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-sm text-red-500">{error}</p>
+                    <div className="flex w-full justify-center items-center">
+                        <p className="text-sm text-red-500 text-center">{error}</p>
+                    </div>
                     <form onSubmit={handleSignUp}>
                         <div className="grid w-full items-center gap-4">
                             <div className="flex flex-col space-y-1.5">
@@ -102,7 +108,9 @@ export default function SignUp() {
                                 <Label htmlFor="confirm" className="text-[var(--primary-01)] font-semibold">Confirm password</Label>
                                 <Input id="confirm" name="confirm" minLength={8} maxLength={24} type="password" placeholder="Confirm password" className="border-[var(--primary-01)] outline-[1px] active:outline-[var(--primary-01)] focus:border-[var(--primary-01)] outline-[var(--primary-01)]" required/>
                             </div>
-                            <Button type="submit" className="h-[40px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)]">Continue</Button>
+                            <Button type="submit" variant={isDisabled===false?"default":"outline"} disabled={isDisabled} className={`h-[40px] ${isDisabled===false?"bg-[var(--primary-01)] hover:bg-[var(--primary-01)]":""}`}>
+                                {isDisabled===false?(<p>Create account</p>):(<p>Creating...</p>)}
+                            </Button>
                             <p className="text-sm text-gray-500 text-center">Or sign up with</p>
                             <div className="flex flex-col space-y-1.5">
                                 <Button type="button" className="h-[40px]" variant="outline">

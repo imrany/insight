@@ -15,10 +15,12 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 export default function SignIn() {
+    const [isDisabled,setIsDisabled]=useState(false)
     const router = useRouter()
     const [error,setError]=useState("")
     async function handleSignIn(e:any) {
         try{
+            setIsDisabled(true)
             e.preventDefault()
             const url="/api/auth/sign_in"
             const response=await fetch(url,{
@@ -27,13 +29,14 @@ export default function SignIn() {
                     "content-type":"application/json"
                 },
                 body:JSON.stringify({
-                    password:e.target.confirm.value,
+                    password:e.target.password.value,
                     email:e.target.email.value
                 })
             })
             const parseRes=await response.json()
             if(parseRes.error){
                 setError(parseRes.error)
+                setIsDisabled(false)
             }else{
                 const data:any=parseRes.data
                 console.log(data)
@@ -43,6 +46,7 @@ export default function SignIn() {
             }
         }catch(error:any){
             setError(error.message)
+            setIsDisabled(false)
             console.log(error.message)
         }
     }
@@ -78,7 +82,9 @@ export default function SignIn() {
                     <CardDescription>Get started by sign in to your account.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-sm text-red-500">{error}</p>
+                    <div className="flex w-full justify-center items-center">
+                        <p className="text-sm text-red-500 text-center">{error}</p>
+                    </div>
                     <form onSubmit={handleSignIn}>
                         <div className="grid w-full items-center gap-4">
                             <div className="flex flex-col space-y-1.5">
@@ -92,7 +98,9 @@ export default function SignIn() {
                             <Button variant="link" className="ml-auto text-[var(--primary-01)]" asChild>
                                 <Link href="#">Forgot password</Link>
                             </Button>
-                            <Button type="submit" className="h-[40px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)]">Sign in</Button>
+                            <Button type="submit" variant={isDisabled===false?"default":"outline"} disabled={isDisabled} className={`h-[40px] ${isDisabled===false?"bg-[var(--primary-01)] hover:bg-[var(--primary-01)]":""}`}>
+                                {isDisabled===false?(<p>Sign in</p>):(<p>Sending...</p>)}
+                            </Button>
                             <p className="text-sm text-gray-500 text-center">Or sign in with</p>
                             <div className="flex flex-col space-y-1.5">
                                 <Button type="button" className="h-[40px]" variant="outline">

@@ -1,14 +1,21 @@
 "use client"
 import { useEffect, useState } from 'react';
-import { SidebarOpen, SidebarClose, Plus, Home, ChevronRight, Settings } from 'lucide-react';
+import { SidebarOpen, SidebarClose, Plus, Home, ChevronRight, Settings, LogOut, Router } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useRouter } from 'next/navigation';
 
 
 export default function AppSidebar (){
+  const router=useRouter()
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile,setIsMobile]=useState(false)
+  const [data,setData]=useState({
+    username:"",
+    photo:"",
+    token:""
+  })
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -22,11 +29,23 @@ export default function AppSidebar (){
     }
   }
 
+  function checkData(){
+    const stringifyData:any=localStorage.getItem("user-details")
+    const parsedData:any=!stringifyData?data:JSON.parse(stringifyData)
+    setData(parsedData)
+  }
+
   if (typeof window !== 'undefined') {
     window.onresize=checkScreen
   }
 
+  function logOut(){
+    localStorage.clear()
+    router.push("/")
+  }
+
   useEffect(()=>{
+    checkData()
     checkScreen()
   },[])
   return (
@@ -47,16 +66,14 @@ export default function AppSidebar (){
                             <Home className="text-2xl"/>
                         </Link>
                     </Button>
-                    <Button variant="outline" className="w-[30px] h-[30px]" asChild>
-                        <Link href="/home/settings">
-                            <Settings className="text-2xl"/>
-                        </Link>
+                    <Button onClick={logOut} variant="outline" className="w-[30px] h-[30px]">
+                        <LogOut className="text-2xl"/>
                     </Button>
                 </div>
                 <div className="mt-auto  flex justify-center">
                     <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
+                        <AvatarImage src={data.photo} />
+                        <AvatarFallback className='uppercase bg-gray-500'>{data.username.slice(0,2)}</AvatarFallback>
                     </Avatar>
                 </div>
             </div>
@@ -86,26 +103,29 @@ export default function AppSidebar (){
                                             </span>
                                         </span>
                                     </Button>
-                                    <Button onClick={toggleSidebar} variant="ghost" className='w-full'>
+                                    <Button onClick={()=>{
+                                        toggleSidebar()
+                                        logOut()
+                                    }} variant="ghost" className='w-full'>
                                         <span className="flex items-center w-full text-gray-700">
                                             <span className="flex gap-2 items-center">
-                                                <Settings className="w-[20px] h-[20px]"/>
-                                                <Link href="/home/settings">Settings</Link>
+                                                <LogOut className="w-[20px] h-[20px]"/>
+                                                <span>Sign out</span>
                                             </span>
                                         </span>
                                     </Button>
                                 </div>
 
-                                <Button onClick={toggleSidebar} variant="ghost" className='w-full h-fit mt-auto'>
-                                    <span className="flex items-center w-full text-gray-700">
-                                        <span className="flex gap-2 items-center">
+                                <Button onClick={toggleSidebar} variant="ghost" className='w-full h-fit mt-auto' asChild>
+                                    <Link href="/home/settings" className="flex items-center w-full text-gray-700">
+                                        <span className="flex gap-2 w-full items-center">
                                             <Avatar>
-                                                <AvatarImage src="https://github.com/shadcn.png" />
-                                                <AvatarFallback>CN</AvatarFallback>
+                                                <AvatarImage src={data.photo} />
+                                                <AvatarFallback className='uppercase text-white bg-gray-500'>{data.username.slice(0,2)}</AvatarFallback>
                                             </Avatar>
-                                            <Link href="/home/settings">John Doe</Link>
+                                            <span>{data.username}</span>
                                         </span>
-                                    </span>
+                                    </Link>
                                 </Button>
                             </div>
                         </div>
@@ -133,26 +153,26 @@ export default function AppSidebar (){
                                         </span>
                                     </span>
                                 </Button>
-                                <Button variant="ghost" className='w-full'>
+                                <Button onClick={logOut} variant="ghost" className='w-full'>
                                     <span className="flex items-center w-full text-gray-700">
                                         <span className="flex gap-2 items-center">
-                                            <Settings className="w-[20px] h-[20px]"/>
-                                            <Link href="/home/settings">Settings</Link>
+                                            <LogOut className="w-[20px] h-[20px]"/>
+                                            <span>Sign out</span>
                                         </span>
                                     </span>
                                 </Button>
                             </div>
 
-                            <Button variant="ghost" className='w-full h-fit mt-auto'>
-                                <span className="flex items-center w-full text-gray-700">
-                                    <span className="flex gap-2 items-center">
+                            <Button variant="ghost" className='w-full h-fit mt-auto' asChild>
+                                <Link href="/home/settings" className="flex items-center w-full text-gray-700">
+                                    <span className="flex gap-2 w-full items-center">
                                         <Avatar>
-                                            <AvatarImage src="https://github.com/shadcn.png" />
-                                            <AvatarFallback>CN</AvatarFallback>
+                                            <AvatarImage src={data.photo} />
+                                            <AvatarFallback className='uppercase text-white bg-gray-500'>{data.username.slice(0,2)}</AvatarFallback>
                                         </Avatar>
-                                        <Link href="/home/settings">John Doe</Link>
+                                        <span>{data.username}</span>
                                     </span>
-                                </span>
+                                </Link>
                             </Button>
                         </div>
                     </div>

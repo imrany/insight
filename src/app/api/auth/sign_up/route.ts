@@ -15,8 +15,8 @@ async function insertUser(
     hashedPassword: string
 ) {
     return new Promise((resolve, reject) => {
-      db.run(
-        "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *",
+      db.all(
+        "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *;",
         [username, email, hashedPassword],
         (error: any, data: any) => {
           if (error) {
@@ -42,19 +42,23 @@ export async function POST(req: Request) {
 
             console.log(data);
             return NextResponse.json({
-                msg: `Welcome ${data.rows[0].username}`,
+                msg: `Welcome ${data[0].username}`,
                 data: {
-                    username: data.rows[0].username,
-                    email: data.rows[0].email,
-                    photo: data.rows[0].photo,
-                    token: generateUserToken(data.rows[0].id),
+                    username: data[0].username,
+                    email: data[0].email,
+                    photo: data[0].photo,
+                    token: generateUserToken(data[0].id),
                 },
             });
         } else {
-            return NextResponse.json({ error: "Enter all the required fields" }, { status: 400 });
+            return NextResponse.json({ error: "Enter all the required fields" }, { status: 408 });
         }
     } catch (error: any) {
         console.error('Error:', error); // Return an error response
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        if(error.message.includes('UNIQUE')){
+            return NextResponse.json({ error: `This user has an account` }, { status: 408 });
+        }else{
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
     }
 }

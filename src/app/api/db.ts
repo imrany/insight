@@ -25,7 +25,8 @@ function createTable(tableSql:string,tableName:string){
 
 const User = `
 CREATE TABLE IF NOT EXISTS users (
-    email TEXT PRIMARY KEY NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
     type varchar(10) DEFAULT 'user' not null,
     username TEXT NOT NULL,
     photo TEXT,
