@@ -431,6 +431,7 @@ export default function Home() {
                         onClick={() => {
                           try{
                             window.speechSynthesis.cancel();
+                            setPlayingId(null);
                             if (typeof recognition !== "undefined") {
                               recognition.start();
                             }
@@ -444,7 +445,7 @@ export default function Home() {
                             })
                           }
                         }}
-                        className="md:w-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)] md:h-[50px] w-[40px] h-[40px] rounded-[50px]"
+                        className="w-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)] h-[50px]] rounded-[50px]"
                       >
                         <Mic className="" />
                       </Button>
@@ -473,6 +474,7 @@ export default function Home() {
                     <Button
                       onClick={() => {
                         try{
+                          setPlayingId(null);
                           window.speechSynthesis.cancel();
                           if (typeof recognition !== "undefined") {
                             recognition.start();
@@ -487,7 +489,7 @@ export default function Home() {
                           })
                         }
                       }}
-                      className="md:w-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)] md:h-[50px] w-[40px] h-[40px] rounded-[50px]"
+                      className="w-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)] h-[50px] rounded-[50px]"
                     >
                       <Mic className="" />
                     </Button>
