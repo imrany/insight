@@ -432,6 +432,7 @@ export default function Home() {
                               </div> 
                               <div className="grid gap-2">
                                 <Button onClick={()=>{
+                                    togglePopover(prompt.id)
                                     if(isShowMoreId===prompt.id){
                                       setIsShowMoreId(null)
                                     }else{
