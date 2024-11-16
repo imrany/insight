@@ -53,7 +53,7 @@ export default function AppSidebar (){
   return (
     <div className={`sidebar ${isOpen ? 'open ' : ''}`}>
         {isOpen?(
-            <div className="pb-[20px] h-full pt-[10px] flex flex-col  bg-gradient-to-t from-blue-100/20 dark:from-blue-900/5 shadow-md shadow-gray-200">
+            <div className="pb-[20px] h-full pt-[10px] flex flex-col bg-[var(--body-bg)]  bg-gradient-to-t from-blue-100/20 dark:from-blue-900/5 shadow-md shadow-gray-200">
                 <div className="pb-2 border-b-[1px] flex justify-center">
                     <Button onClick={toggleSidebar} variant="ghost" className="text-[var(--primary-01)] hover:text-[var(--primary-01)] w-fit">
                         <SidebarOpen />
