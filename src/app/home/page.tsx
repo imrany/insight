@@ -334,6 +334,7 @@ export default function Home() {
   }
 
   useEffect(() => {
+    window.speechSynthesis.cancel();
     checkAuth();
     getPrompts();
   }, []);
