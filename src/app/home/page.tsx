@@ -20,8 +20,8 @@ import {
 
 export default function Home() {
   const { toast }=useToast()
-  const [openPopoverId, setOpenPopoverId] = useState<any>(null);
-  const [playingId, setPlayingId] = useState<any>(null);
+  const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
+  const [playingId, setPlayingId] = useState<string|null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [prompts, setPrompts] = useState<any>([]);
   const router = useRouter();
@@ -45,91 +45,102 @@ export default function Home() {
     window.speechSynthesis.speak(speech);
   }
 
-  // Function to download the stored audio file 
-  function downloadAudioFile(id: string, response:string) { 
-    const base64data = localStorage.getItem(`speechAudio_${id}`); 
-    if (base64data) { 
-      const audioBlob = dataURLToBlob(base64data); 
-      const audioUrl = URL.createObjectURL(audioBlob); 
-      const link = document.createElement('a'); 
-      link.href = audioUrl; 
-      link.download = `${response.slice(0,20)}.wav`; 
-      // document.body.appendChild(link); 
-      link.click(); 
-      // document.body.removeChild(link); 
-    } else { 
+  function downloadAudioFile(id: string, response: string) {
+    const base64data = localStorage.getItem(`speechAudio_${id}`);
+    if (base64data) {
+      const audioBlob = dataURLToBlob(base64data);
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const link = document.createElement('a');
+  
+      link.href = audioUrl;
+      link.target="_blank"
+      // link.download = `${response.slice(0, 20)}.wav`;
+      link.click();
+  
+      console.log("Audio file downloaded.");
+    } else {
+      console.error("No audio data found in localStorage for the given ID.");
       toast({
         variant: "destructive",
-        description: "Fail to download, listen the audio and try again!",
-      })
-      console.error('No audio data found in localStorage for the given id.'); 
-    } 
+        description: "Failed to download. Listen to the full audio and try again!",
+      });
+    }
   }
-
-  // Helper function to convert base64 data URL to Blob 
-  function dataURLToBlob(dataURL: string) { 
-    const byteString = atob(dataURL.split(',')[1]); 
-    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0]; 
-    const ab = new ArrayBuffer(byteString.length); 
-    const ia = new Uint8Array(ab); 
-    for (let i = 0; i < byteString.length; i++) { 
-      ia[i] = byteString.charCodeAt(i); 
-    } 
+  
+  // Helper function to convert Base64 to Blob
+  function dataURLToBlob(dataURL: string): Blob {
+    const byteString = atob(dataURL.split(",")[1]);
+    const mimeString = dataURL.split(",")[0].split(":")[1].split(";")[0];
+  
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+  
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+  
     return new Blob([ab], { type: mimeString });
   }
+  
 
-  function readAndStoreAudio(prompt:string,response:string,id:string) {
-    const text=`${prompt}  ${response}`
+  function readAndStoreAudio(prompt: string, response: string, id: string) {
+    const text = `${prompt} ${response}`;
     const speech = new SpeechSynthesisUtterance(text);
     speech.lang = 'en-US';
     speech.rate = 1;
     speech.pitch = 1;
-
-    // Create a new Audio Context
+  
+    // Create AudioContext
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const destination = audioContext.createMediaStreamDestination();
+    const audioChunks: Blob[] = [];
+  
+    // Create a gain node to control the audio flow
+    const gainNode = audioContext.createGain();
+    gainNode.connect(destination);
+  
+    // Connect speech synthesis to AudioContext
+    speechSynthesis.speak(speech);
+    const utteranceStream = audioContext.createMediaStreamSource(destination.stream);
+    utteranceStream.connect(gainNode);
+  
+    // Initialize MediaRecorder
     const mediaRecorder = new MediaRecorder(destination.stream);
-    const audioChunks:any = [];
-
-    // Record the audio
+  
     mediaRecorder.ondataavailable = (event) => {
       audioChunks.push(event.data);
     };
-
+  
     mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-
-        // Store the audio file in localStorage
-        const reader = new FileReader(); 
-        reader.readAsDataURL(audioBlob); 
-        reader.onloadend = () => { 
-          const base64data = reader.result; 
-          localStorage.setItem(`speechAudio_${id}`, base64data as string); 
-        };
+      const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+      const reader = new FileReader();
+  
+      reader.onloadend = () => {
+        const base64data = reader.result as string;
+        localStorage.setItem(`speechAudio_${id}`, base64data);
+        console.log(`Audio stored with ID: speechAudio_${id}`);
+      };
+  
+      reader.readAsDataURL(audioBlob);
     };
-
-    // Connect the Speech Synthesis to the Audio Context
-    speechSynthesis.speak(speech);
-    const source = audioContext.createMediaStreamSource(destination.stream);
-    source.connect(audioContext.destination);
-
+  
     // Start recording
     mediaRecorder.start();
-    
-    // Pause recording after the speech pauses
-    speech.onpause=()=>{
-      mediaRecorder.pause()
-      audioContext.close();
-      console.log("speech paused")
-    }
-
-    // Stop recording after the speech ends
+  
+    // Stop recording when the speech ends
     speech.onend = () => {
       mediaRecorder.stop();
       audioContext.close();
-      setPlayingId(null);
+      setPlayingId(null)
+    };
+  
+    // Handle pauses (optional)
+    speech.onpause = () => {
+      mediaRecorder.pause();
+      console.log("Speech paused.");
     };
   }
+  
 
   let recognition: {
     new (): any;
@@ -155,21 +166,21 @@ export default function Home() {
         console.log("Ready to listen");
       };
 
+      const voiceInputs:string[]=[]
       recognition.addEventListener("result", (e: any) => {
         const result = e.results;
-        const transcript =
-          result[result.length - 1][
-            result[0].length - 1
-          ].transcript.toUpperCase();
-        const update = transcript.includes(".")
-          ? transcript.replace(".", "")
-          : transcript;
-        console.log(update);
-        sendPrompts(update);
+        const transcript =result[result.length - 1][result[0].length - 1].transcript.toLowerCase();
+        const update = transcript.includes(".")? transcript.replace(".", ""): transcript;
+        voiceInputs.push(update);
         recognition.stop();
       });
 
       recognition.onend = () => {
+        const lastInput=voiceInputs.slice(voiceInputs.length-1, voiceInputs.length)[0]
+        if(lastInput!==undefined){
+          sendPrompts(lastInput);
+          // console.log(lastInput)
+        }
         console.log("Speech recognition ended");
       };
 
@@ -179,6 +190,8 @@ export default function Home() {
           description: e.error,
         })
         console.error(e.error);
+        // router.refresh()
+        window.location.reload()
       };
     } else {
       toast({
@@ -217,14 +230,15 @@ export default function Home() {
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
         description: error.message,
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
+        action: <ToastAction altText="Try again" onClick={getPrompts}>Try again</ToastAction>,
       })
       setIsLoading(false);
     }
   }
 
-  const handleOpenPopover = (id:string) => { setOpenPopoverId(id); }; 
-  const handleClosePopover = () => { setOpenPopoverId(null); };
+  const togglePopover = (id: string) => {
+    setOpenPopoverId((prev) => (prev === id ? null : id));
+  };
 
   async function sendPrompts(prompt: string) {
     try {
@@ -268,7 +282,7 @@ export default function Home() {
   async function handleDeletePrompt(id: string) {
     try {
       setIsLoading(true);
-      handleClosePopover()
+      togglePopover(id)
       const url = `/api/prompts/${id}`;
       const response = await fetch(url, {
         method: "DELETE"
@@ -283,17 +297,18 @@ export default function Home() {
           description: parseRes.error,
         })
       } else {
+        localStorage.removeItem(`speechAudio_${id}`)
         getPrompts()
       }
     } catch (error: any) {
       setIsLoading(false);
-      handleClosePopover()
+      togglePopover(id)
       console.log(error.message);
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: error.massage,
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
+        description: error.message,
+        action: <ToastAction altText="Try again" onClick={getPrompts}>Try again</ToastAction>,
       })
     }
   }
@@ -353,11 +368,17 @@ export default function Home() {
                       </p>
                     </div>
                     <div className="ml-auto flex flex-col gap-4 items-center justify-center">
-                      <Popover isOpen={openPopoverId === prompt.id} open={openPopoverId === prompt.id} onClose={handleClosePopover}>
-                        <PopoverTrigger onClick={() => handleOpenPopover(prompt.id)}>
+                      <Popover 
+                        key={prompt.id}
+                        open={openPopoverId === prompt.id}
+                        onOpenChange={(isOpen) => {
+                          setOpenPopoverId(isOpen ? prompt.id : null);
+                        }}
+                      >
+                        <PopoverTrigger onClick={() => togglePopover(prompt.id)}>
                           <MoreHorizontal/>
                         </PopoverTrigger>
-                        <PopoverContent className="w-80 max-md:scale-90 font-[family-name:var(--font-geist-sans)]">
+                        <PopoverContent className="w-80 scale-90 font-[family-name:var(--font-geist-sans)]">
                           <div className="grid gap-4">
                             <div className="space-y-2">
                               <h4 className="font-medium leading-none">More</h4>
@@ -367,7 +388,7 @@ export default function Home() {
                             </div> 
                             <div className="grid gap-2">
                               <Button onClick={()=>{
-                                handleClosePopover()
+                                togglePopover(prompt.id)
                                 downloadAudioFile(prompt.id,prompt.response)
                               }} variant="outline" className="flex justify-start">
                                 <span className="flex items-center gap-1">
@@ -408,9 +429,19 @@ export default function Home() {
                     <TooltipTrigger asChild>
                       <Button
                         onClick={() => {
-                          window.speechSynthesis.cancel();
-                          if (typeof recognition !== "undefined") {
-                            recognition.start();
+                          try{
+                            window.speechSynthesis.cancel();
+                            if (typeof recognition !== "undefined") {
+                              recognition.start();
+                            }
+                          }catch(error:any){
+                            console.log(error)
+                            toast({
+                              variant: "destructive",
+                              title: "Microphone issue",
+                              description: "Failed to start microphone",
+                              action: <ToastAction altText="Try again" onClick={()=>router.refresh()}>Try again</ToastAction>,
+                            })
                           }
                         }}
                         className="md:w-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)] md:h-[50px] w-[40px] h-[40px] rounded-[50px]"
@@ -441,9 +472,19 @@ export default function Home() {
                   <TooltipTrigger asChild>
                     <Button
                       onClick={() => {
-                        window.speechSynthesis.cancel();
-                        if (typeof recognition !== "undefined") {
-                          recognition.start();
+                        try{
+                          window.speechSynthesis.cancel();
+                          if (typeof recognition !== "undefined") {
+                            recognition.start();
+                          }
+                        }catch(error:any){
+                          console.log(error)
+                          toast({
+                            variant: "destructive",
+                            title: "Microphone issue",
+                            description: "Failed to start microphone",
+                            action: <ToastAction altText="Try again" onClick={()=>router.refresh()}>Try again</ToastAction>,
+                          })
                         }
                       }}
                       className="md:w-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)] md:h-[50px] w-[40px] h-[40px] rounded-[50px]"
