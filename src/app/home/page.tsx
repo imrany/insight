@@ -381,9 +381,9 @@ export default function Home() {
                         <PopoverContent className="w-80 scale-90 font-[family-name:var(--font-geist-sans)]">
                           <div className="grid gap-4">
                             <div className="space-y-2">
-                              <h4 className="font-medium leading-none">More</h4>
+                              <h4 className="font-medium leading-none">More Actions</h4>
                               <p className="text-sm text-muted-foreground">
-                                More actions that can be done on this audio.
+                                Actions that can be done on this audio.
                               </p>
                             </div> 
                             <div className="grid gap-2">
