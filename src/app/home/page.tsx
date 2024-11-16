@@ -203,7 +203,6 @@ export default function Home() {
 
   async function getPrompts() {
     try {
-      scrollToBottom()
       setIsLoading(true);
       const stringifyData: any = localStorage.getItem("user-details");
       const parsedData: any = JSON.parse(stringifyData);
@@ -223,7 +222,8 @@ export default function Home() {
         console.log(parseRes.prompts);
         setPrompts(parseRes.prompts);
         setIsLoading(false);
-        
+        const id:string=parseRes.prompts[parseRes.prompts.length-1].id
+        scrollToBottom(id)
       }
     } catch (error: any) {
       console.log(error.message);
@@ -335,12 +335,14 @@ export default function Home() {
     return "odd"
   }
 
-  function scrollToBottom(){
-    window.scrollTo({
-      top: document.body.scrollHeight, // Scroll to the bottom of the page
-      behavior: 'smooth' // Smooth scrolling
+  function scrollToBottom(id:string){
+    const scrollTarget:any= document.getElementById(id);
+    scrollTarget.scrollIntoView({
+      behavior: 'smooth', // Smooth scrolling effect
+      block: 'center',    // Align to the center of the viewport
     });
   }
+
   useEffect(() => {
     window.speechSynthesis.cancel();
     checkAuth();
@@ -367,6 +369,7 @@ export default function Home() {
               <ScrollArea className="h-full flex flex-col mb-[20px] gap-2 items-center justify-center md:px-[10px] md:w-[620px] w-[75vw] flex-grow">
                 {prompts.map((prompt: any) => (
                   <div
+                    id={prompt.id}
                     key={prompt.id}
                     className={`flex my-4 p-4 ${checkEven(prompt.id)!=="even"?'bg-[#f07d30] text-white':'bg-[#f1ece8] text-gray-800'} rounded-[10px] shadow-[var(--shadow-default)] justify-center w-full`}
                   >
