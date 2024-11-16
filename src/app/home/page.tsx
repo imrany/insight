@@ -203,6 +203,7 @@ export default function Home() {
 
   async function getPrompts() {
     try {
+      scrollToBottom()
       setIsLoading(true);
       const stringifyData: any = localStorage.getItem("user-details");
       const parsedData: any = JSON.parse(stringifyData);
@@ -222,6 +223,7 @@ export default function Home() {
         console.log(parseRes.prompts);
         setPrompts(parseRes.prompts);
         setIsLoading(false);
+        
       }
     } catch (error: any) {
       console.log(error.message);
@@ -333,6 +335,12 @@ export default function Home() {
     return "odd"
   }
 
+  function scrollToBottom(){
+    window.scrollTo({
+      top: document.body.scrollHeight, // Scroll to the bottom of the page
+      behavior: 'smooth' // Smooth scrolling
+    });
+  }
   useEffect(() => {
     window.speechSynthesis.cancel();
     checkAuth();
