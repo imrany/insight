@@ -26,11 +26,16 @@ export default function Home() {
   const [isMicDisabled, setIsMicDisabled] = useState(false);
   const [isRecording,setIsRecording]=useState(false)
   const [prompts, setPrompts] = useState<any>([]);
+  const [userData,setUserData]=useState<any>([])
   const router = useRouter();
   function checkAuth() {
     const stringifyData: any = localStorage.getItem("user-details");
     if (!stringifyData) {
       router.push("/");
+    }else{
+      const stringifyData: any = localStorage.getItem("user-details");
+      const parsedData: any = JSON.parse(stringifyData);
+      setUserData(parsedData)
     }
   }
 
@@ -395,7 +400,7 @@ export default function Home() {
                         {prompt.response.slice(0, 70)}
                       </p>
                     </div>
-                    <div className="ml-auto flex flex-col gap-4 items-center justify-center">
+                    <div className="ml-auto flex flex-col gap-4 items-center h-full justify-between">
                       <Popover 
                         key={prompt.id}
                         open={openPopoverId === prompt.id}
@@ -507,9 +512,11 @@ export default function Home() {
             <>
               <div className="flex flex-col items-center justify-center gap-1">
                 <div>
-                  <Speech className="w-[40px] h-[40px]" />
-                </div>
-                <p className="md:text-3xl text-2xl text-[var(--primary-01)] font-semibold text-center">{`Speak to me, I'm listening`}</p>
+-                  <Speech className="w-[40px] h-[40px]" />
+-                </div>
+                <p className="md:text-3xl text-2xl text-[var(--primary-01)] font-semibold text-center">
+                  {`${userData.username}, it's great to see you`}
+                </p>
                 <p className="text-gray-500 text-sm text-center">
                   Click the microphone to start recording.
                 </p>
