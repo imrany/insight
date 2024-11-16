@@ -2,7 +2,8 @@ import x from 'sqlite3';
 const sqlite3=x.verbose();
 
 // Connecting Database
-export const db = new sqlite3.Database("database.db" , (err) => {
+const databaseFile = __dirname + '/database.db';
+export const db = new sqlite3.Database(databaseFile , (err) => {
     if(err){
         console.log("Error Occurred - " + err.message);
     }else{
