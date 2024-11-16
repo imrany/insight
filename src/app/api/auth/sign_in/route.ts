@@ -33,18 +33,18 @@ export async function POST(req: Request) {
         if(email&&password){
             // Wait for the insert operation to complete
             const data: any = await selectUser(email);
-            if(data[0]){
-                if (data[0].email&&await compare(password,data[0].password)) {
+            if(data.rows[0]){
+                if (data.rows[0].email&&await compare(password,data.rows[0].password)) {
                     return Response.json({
-                        msg:`Welcome ${data[0].username}`,
+                        msg:`Welcome ${data.rows[0].username}`,
                         data:{
-                            username:data[0].username,
-                            email:data[0].email,
-                            photo:data[0].photo,
-                            token:generateUserToken(data[0].id)
+                            username:data.rows[0].username,
+                            email:data.rows[0].email,
+                            photo:data.rows[0].photo,
+                            token:generateUserToken(data.rows[0].id)
                         }
                     })
-                }else if(await compare(password,data[0].password)===false){
+                }else if(await compare(password,data.rows[0].password)===false){
                     return NextResponse.json({error:'You have enter the wrong password'},{status:401})
                 }
             }else{

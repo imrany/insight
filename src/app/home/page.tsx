@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Mic, Pause, Play, Speech } from "lucide-react";
+import { Delete, Download, Mic, MoreHorizontal, Pause, Play, Speech, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -10,8 +10,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function Home() {
+  const { toast }=useToast()
+  const [openPopoverId, setOpenPopoverId] = useState<any>(null);
   const [playingId, setPlayingId] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [prompts, setPrompts] = useState<any>([]);
@@ -34,6 +43,92 @@ export default function Home() {
 
     // Speak the text
     window.speechSynthesis.speak(speech);
+  }
+
+  // Function to download the stored audio file 
+  function downloadAudioFile(id: string, response:string) { 
+    const base64data = localStorage.getItem(`speechAudio_${id}`); 
+    if (base64data) { 
+      const audioBlob = dataURLToBlob(base64data); 
+      const audioUrl = URL.createObjectURL(audioBlob); 
+      const link = document.createElement('a'); 
+      link.href = audioUrl; 
+      link.download = `${response.slice(0,20)}.wav`; 
+      // document.body.appendChild(link); 
+      link.click(); 
+      // document.body.removeChild(link); 
+    } else { 
+      toast({
+        variant: "destructive",
+        description: "Fail to download, listen the audio and try again!",
+      })
+      console.error('No audio data found in localStorage for the given id.'); 
+    } 
+  }
+
+  // Helper function to convert base64 data URL to Blob 
+  function dataURLToBlob(dataURL: string) { 
+    const byteString = atob(dataURL.split(',')[1]); 
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0]; 
+    const ab = new ArrayBuffer(byteString.length); 
+    const ia = new Uint8Array(ab); 
+    for (let i = 0; i < byteString.length; i++) { 
+      ia[i] = byteString.charCodeAt(i); 
+    } 
+    return new Blob([ab], { type: mimeString });
+  }
+
+  function readAndStoreAudio(prompt:string,response:string,id:string) {
+    const text=`${prompt}  ${response}`
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = 'en-US';
+    speech.rate = 1;
+    speech.pitch = 1;
+
+    // Create a new Audio Context
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const destination = audioContext.createMediaStreamDestination();
+    const mediaRecorder = new MediaRecorder(destination.stream);
+    const audioChunks:any = [];
+
+    // Record the audio
+    mediaRecorder.ondataavailable = (event) => {
+      audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+
+        // Store the audio file in localStorage
+        const reader = new FileReader(); 
+        reader.readAsDataURL(audioBlob); 
+        reader.onloadend = () => { 
+          const base64data = reader.result; 
+          localStorage.setItem(`speechAudio_${id}`, base64data as string); 
+        };
+    };
+
+    // Connect the Speech Synthesis to the Audio Context
+    speechSynthesis.speak(speech);
+    const source = audioContext.createMediaStreamSource(destination.stream);
+    source.connect(audioContext.destination);
+
+    // Start recording
+    mediaRecorder.start();
+    
+    // Pause recording after the speech pauses
+    speech.onpause=()=>{
+      mediaRecorder.pause()
+      audioContext.close();
+      console.log("speech paused")
+    }
+
+    // Stop recording after the speech ends
+    speech.onend = () => {
+      mediaRecorder.stop();
+      audioContext.close();
+      setPlayingId(null);
+    };
   }
 
   let recognition: {
@@ -79,9 +174,17 @@ export default function Home() {
       };
 
       recognition.onerror = (e: any) => {
+        toast({
+          variant: "destructive",
+          description: e.error,
+        })
         console.error(e.error);
       };
     } else {
+      toast({
+        variant: "destructive",
+        description: "Speech recognition not supported",
+      })
       console.error("Speech recognition not supported");
     }
   }
@@ -97,6 +200,11 @@ export default function Home() {
       const parseRes = await response.json();
       if (parseRes.error) {
         console.log(parseRes.error);
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: parseRes.error,
+        })
         setIsLoading(false);
       } else {
         console.log(parseRes.prompts);
@@ -105,9 +213,18 @@ export default function Home() {
       }
     } catch (error: any) {
       console.log(error.message);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.message,
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      })
       setIsLoading(false);
     }
   }
+
+  const handleOpenPopover = (id:string) => { setOpenPopoverId(id); }; 
+  const handleClosePopover = () => { setOpenPopoverId(null); };
 
   async function sendPrompts(prompt: string) {
     try {
@@ -118,7 +235,7 @@ export default function Home() {
       const response = await fetch(url, {
         method: "POST",
         headers: {
-          "content-type": "application/jsonjson",
+          "content-type": "application/json",
         },
         body: JSON.stringify({
           email: parsedData.email,
@@ -128,22 +245,67 @@ export default function Home() {
       const parseRes = await response.json();
       if (parseRes.error) {
         console.log(parseRes.error);
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: parseRes.error,
+        })
       } else {
-        console.log(parseRes.data);
-        setPrompts(parseRes.data);
+        console.log(parseRes.prompts);
+        setPrompts(parseRes.prompts);
       }
     } catch (error: any) {
       console.log(error.message);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.massage,
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      })
     }
   }
 
-  const handlePlayPause = (id:string, response:string) => {
+  async function handleDeletePrompt(id: string) {
+    try {
+      setIsLoading(true);
+      handleClosePopover()
+      const url = `/api/prompts/${id}`;
+      const response = await fetch(url, {
+        method: "DELETE"
+      });
+      const parseRes = await response.json();
+      if (parseRes.error) {
+        setIsLoading(false);
+        console.log(parseRes.error);
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: parseRes.error,
+        })
+      } else {
+        getPrompts()
+      }
+    } catch (error: any) {
+      setIsLoading(false);
+      handleClosePopover()
+      console.log(error.message);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error.massage,
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      })
+    }
+  }
+
+  const handlePlayPause = (prompt:string, response:string, id:string) => {
     if (playingId === id) {
       window.speechSynthesis.cancel();
       setPlayingId(null);
     } else {
       window.speechSynthesis.cancel();
-      textToSpeech(response);
+      readAndStoreAudio(prompt,response,id)
+      // textToSpeech(response);
       setPlayingId(id);
     }
   };
@@ -163,10 +325,22 @@ export default function Home() {
   return (
     <>
       {isLoading === false ? (
-        <main className="flex w-full h-full gap-6 flex-col items-center justify-center">
-          {prompts.length > 0 ? (
+          <main style={{opacity: 1, filter: "blur(0px)"}}  className=" bg-[var(--body-bg)] bg-gradient-to-t from-blue-100/20 dark:from-blue-900/5 flex w-full h-full gap-6 flex-col items-center justify-center">
+            <svg 
+              aria-hidden
+              className="pointer-events-none [z-index:-1] absolute inset-0 h-full w-full fill-blue-500/50 stroke-blue-500/50 [mask-image:linear-gradient(to_top,_#ffffffad,_transparent)] opacity-[.30]" 
+              style={{visibility: "visible"}}
+            >
+              <defs>
+                  <pattern id=":Rs57qbt6ja:" width={20} height={20} patternUnits="userSpaceOnUse" x="-1" y="-1">
+                      <path d="M.5 20V.5H20" fill="none" strokeDasharray="0"></path>
+                  </pattern>
+              </defs>
+              <rect width="100%" height="100%" strokeWidth="0" fill="url(#:Rs57qbt6ja:)"></rect>
+            </svg>
+          {prompts.length>0? (
             <>
-              <ScrollArea className="h-full flex flex-col gap-2 items-center justify-center md:w-[600px] w-[75vw] flex-grow">
+              <ScrollArea className="h-full flex flex-col mb-[20px] gap-2 items-center justify-center md:px-[10px] md:w-[620px] w-[75vw] flex-grow">
                 {prompts.map((prompt: any) => (
                   <div
                     key={prompt.id}
@@ -178,10 +352,43 @@ export default function Home() {
                         {prompt.response.slice(0, 70)}
                       </p>
                     </div>
-                    <div className="ml-auto flex flex-col items-center justify-center">
+                    <div className="ml-auto flex flex-col gap-4 items-center justify-center">
+                      <Popover isOpen={openPopoverId === prompt.id} open={openPopoverId === prompt.id} onClose={handleClosePopover}>
+                        <PopoverTrigger onClick={() => handleOpenPopover(prompt.id)}>
+                          <MoreHorizontal/>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 max-md:scale-90 font-[family-name:var(--font-geist-sans)]">
+                          <div className="grid gap-4">
+                            <div className="space-y-2">
+                              <h4 className="font-medium leading-none">More</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Set the dimensions for the layer.
+                              </p>
+                            </div> 
+                            <div className="grid gap-2">
+                              <Button onClick={()=>{
+                                handleClosePopover()
+                                downloadAudioFile(prompt.id,prompt.response)
+                              }} variant="outline" className="flex justify-start">
+                                <span className="flex items-center gap-1">
+                                  <Download/>
+                                  <span>Download</span>
+                                </span>
+                              </Button>
+                              <Button onClick={()=>handleDeletePrompt(prompt.id)} variant="destructive" className="flex justify-start">
+                                <span className="flex items-center gap-1">
+                                  <Trash/>
+                                  <span>Delete</span>
+                                </span>
+                              </Button>
+                            </div>
+                          </div> 
+                        </PopoverContent>
+                      </Popover>
+
                       <Button
                         onClick={() =>
-                          handlePlayPause(prompt.id, prompt.response)
+                          handlePlayPause(prompt.prompt, prompt.response, prompt.id)
                         }
                         className="bg-white hover:bg-white w-[40px] h-[40px] text-black rounded-[50px]"
                       >

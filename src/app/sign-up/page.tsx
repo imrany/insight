@@ -13,17 +13,23 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { useToast } from "@/hooks/use-toast"
+import { ToastAction } from "@/components/ui/toast"
+
 
 export default function SignUp() {
+    const { toast } = useToast()
     const router = useRouter()
     const [isDisabled,setIsDisabled]=useState(false)
-    const [error,setError]=useState('')
     async function handleSignUp(e:any) {
         try{
             e.preventDefault()
-            setError("")
             if(e.target.confirm.value!==e.target.password.value){
-                setError("Password doesn't match!")
+                toast({
+                    variant: "destructive",
+                    description: "Password doesn't match!",
+                    action: <ToastAction altText="Try again">Try again</ToastAction>,
+                })
             }else{
                 setIsDisabled(true)    
                 const url="/api/auth/sign_up"
@@ -40,7 +46,12 @@ export default function SignUp() {
                 })
                 const parseRes=await response.json()
                 if(parseRes.error){
-                    setError(parseRes.error)
+                    toast({
+                        variant: "destructive",
+                        title: "Uh oh! Something went wrong.",
+                        description: parseRes.error,
+                        action: <ToastAction altText="Try again">Try again</ToastAction>,
+                    })
                     setIsDisabled(false)    
                 }else{
                     const data:any=parseRes.data
@@ -53,7 +64,12 @@ export default function SignUp() {
         }catch(error:any){
             setIsDisabled(false)    
             console.log(error.message)
-            setError(error.message)
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: error.message,
+                action: <ToastAction altText="Try again">Try again</ToastAction>,
+            })
         }
     }
 
@@ -88,9 +104,6 @@ export default function SignUp() {
                     <CardDescription>Get started by creating an account.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex w-full justify-center items-center">
-                        <p className="text-sm text-red-500 text-center">{error}</p>
-                    </div>
                     <form onSubmit={handleSignUp}>
                         <div className="grid w-full items-center gap-4">
                             <div className="flex flex-col space-y-1.5">

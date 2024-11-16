@@ -48,7 +48,7 @@ export default function AppSidebar (){
   useEffect(()=>{
     checkData()
     checkScreen()
-  })
+  },[])
   return (
     <div className={`sidebar ${isOpen ? 'open ' : ''}`}>
         {isOpen?(

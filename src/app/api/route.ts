@@ -12,13 +12,23 @@ async function insertPrompt(
     email: string
 ) {
     return new Promise((resolve, reject) => {
-      pool.query("INSERT INTO prompts (prompt,response, email) VALUES ($1, $2, $3) RETURNING *;",
+      pool.query("INSERT INTO prompts (prompt,response, email) VALUES ($1, $2, $3);",
         [prompt,response, email],
         (error: any, data: any) => {
           if (error) {
             reject(error);
           } else {
-            resolve(data);
+            pool.query(
+              "SELECT * FROM prompts WHERE email = $1 ORDER BY created_at ASC;",
+              [email],
+              (error: any, data: any) => {
+                if (error) {
+                  reject(error);
+                } else {
+                  resolve(data);
+                }
+              }
+            );
           }
         }
       );
@@ -37,7 +47,7 @@ export async function POST(req: Request) {
         const data: any = await insertPrompt(prompt,text.replace(/<[^>]+>/g, ''),email);
         return Response.json({
             message:"Prompt added successful",
-            data
+            prompts:data.rows
         })
 
     }catch(error:any){

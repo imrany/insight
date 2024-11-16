@@ -9,19 +9,20 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 export default function SignIn() {
+    const { toast }=useToast()
     const [isDisabled,setIsDisabled]=useState(false)
     const router = useRouter()
-    const [error,setError]=useState("")
     async function handleSignIn(e:any) {
         try{
             setIsDisabled(true)
-            setError("")
             e.preventDefault()
             const url="/api/auth/sign_in"
             const response=await fetch(url,{
@@ -36,7 +37,12 @@ export default function SignIn() {
             })
             const parseRes=await response.json()
             if(parseRes.error){
-                setError(parseRes.error)
+                toast({
+                    variant: "destructive",
+                    title: "Uh oh! Something went wrong.",
+                    description: parseRes.error,
+                    action: <ToastAction altText="Try again">Try again</ToastAction>,
+                })
                 setIsDisabled(false)
             }else{
                 const data:any=parseRes.data
@@ -46,9 +52,14 @@ export default function SignIn() {
                 router.push('/home')
             }
         }catch(error:any){
-            setError(error.message)
             setIsDisabled(false)
             console.log(error.message)
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: error.message,
+                action: <ToastAction altText="Try again">Try again</ToastAction>,
+            })
         }
     }
 
@@ -83,9 +94,6 @@ export default function SignIn() {
                     <CardDescription>Get started by sign in to your account.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex w-full justify-center items-center">
-                        <p className="text-sm text-red-500 text-center">{error}</p>
-                    </div>
                     <form onSubmit={handleSignIn}>
                         <div className="grid w-full items-center gap-4">
                             <div className="flex flex-col space-y-1.5">

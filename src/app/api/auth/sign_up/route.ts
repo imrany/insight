@@ -40,14 +40,14 @@ export async function POST(req: Request) {
             // Wait for the insert operation to complete
             const data: any = await insertUser(username, email, hashedPassword);
 
-            console.log(data);
+            console.log(data.rows[0]);
             return NextResponse.json({
-                msg: `Welcome ${data[0].username}`,
+                msg: `Welcome ${data.rows[0].username}`,
                 data: {
-                    username: data[0].username,
-                    email: data[0].email,
-                    photo: data[0].photo,
-                    token: generateUserToken(data[0].id),
+                    username: data.rows[0].username,
+                    email: data.rows[0].email,
+                    photo: data.rows[0].photo,
+                    token: generateUserToken(data.rows[0].id),
                 },
             });
         } else {
@@ -55,8 +55,8 @@ export async function POST(req: Request) {
         }
     } catch (error: any) {
         console.error('Error:', error); // Return an error response
-        if(error.message.includes('UNIQUE')){
-            return NextResponse.json({ error: `This user has an account` }, { status: 408 });
+        if(error.message.includes('duplicate')){
+            return NextResponse.json({ error: `This user has an account, try signing in.` }, { status: 408 });
         }else{
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
