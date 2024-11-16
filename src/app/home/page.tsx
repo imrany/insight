@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Delete, Download, Mic, MoreHorizontal, Pause, Play, Speech, Trash } from "lucide-react";
+import { Delete, Download, Mic, MoreHorizontal, Pause, Play, Speech, Square, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -23,6 +23,8 @@ export default function Home() {
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
   const [playingId, setPlayingId] = useState<string|null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMicDisabled, setIsMicDisabled] = useState(false);
+  const [isRecording,setIsRecording]=useState(false)
   const [prompts, setPrompts] = useState<any>([]);
   const router = useRouter();
   function checkAuth() {
@@ -178,26 +180,35 @@ export default function Home() {
         const lastInput=voiceInputs.slice(voiceInputs.length-1, voiceInputs.length)[0]
         if(lastInput!==undefined){
           sendPrompts(lastInput);
-          // console.log(lastInput)
+          console.log(lastInput)
         }
+        setIsRecording(false)
         console.log("Speech recognition ended");
       };
 
       recognition.onerror = (e: any) => {
-        toast({
-          variant: "destructive",
-          description: e.error,
-        })
-        console.error(e.error);
-        // router.refresh()
-        window.location.reload()
+        setIsRecording(false)
+        console.error("Speech recognition error:", e.error);
+        if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+          toast({
+            variant: "destructive",
+            description: "Speech recognition permissions not granted",
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Microphone issue",
+            description: e.error,
+          });
+          window.location.reload()
+        }
       };
     } else {
       toast({
         variant: "destructive",
-        description: "Speech recognition not supported",
+        description: "Speech recognition not supported by the browser.",
       })
-      console.error("Speech recognition not supported");
+      console.error("Speech recognition not supported by the browser.");
     }
   }
 
@@ -245,6 +256,7 @@ export default function Home() {
 
   async function sendPrompts(prompt: string) {
     try {
+      setIsMicDisabled(true)
       const stringifyData: any = localStorage.getItem("user-details");
       const parsedData: any = JSON.parse(stringifyData);
 
@@ -261,6 +273,7 @@ export default function Home() {
       });
       const parseRes = await response.json();
       if (parseRes.error) {
+        setIsMicDisabled(false)
         console.log(parseRes.error);
         toast({
           variant: "destructive",
@@ -268,10 +281,12 @@ export default function Home() {
           description: parseRes.error,
         })
       } else {
+        setIsMicDisabled(false)
         console.log(parseRes.prompts);
         setPrompts(parseRes.prompts);
       }
     } catch (error: any) {
+      setIsMicDisabled(false)
       console.log(error.message);
       toast({
         variant: "destructive",
@@ -441,13 +456,22 @@ export default function Home() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button
+                      <Button disabled={isMicDisabled}
                         onClick={() => {
                           try{
                             window.speechSynthesis.cancel();
                             setPlayingId(null);
                             if (typeof recognition !== "undefined") {
-                              recognition.start();
+                              if(isRecording===false){
+                                recognition.start();
+                                setIsRecording(true)
+                                toast({
+                                  description: "Microphone is on, ask me a question",
+                                })
+                              }else{
+                                recognition.stop()
+                                setIsRecording(false)
+                              }
                             }
                           }catch(error:any){
                             console.log(error)
@@ -459,9 +483,9 @@ export default function Home() {
                             })
                           }
                         }}
-                        className="w-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)] h-[50px] rounded-[50px]"
+                        className={`w-[50px] ${isMicDisabled?"bg-black hover:bg-black":"bg-[var(--primary-01)] hover:bg-[var(--primary-01)]"} h-[50px] rounded-[50px]`}
                       >
-                        <Mic className="" />
+                        {isRecording===false?(<Mic/>):(<Square strokeWidth={20}/>)}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -485,13 +509,22 @@ export default function Home() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
+                    <Button disabled={isMicDisabled}
                       onClick={() => {
                         try{
-                          setPlayingId(null);
                           window.speechSynthesis.cancel();
+                          setPlayingId(null);
                           if (typeof recognition !== "undefined") {
-                            recognition.start();
+                            if(isRecording===false){
+                              recognition.start();
+                              setIsRecording(true)
+                              toast({
+                                description: "Microphone is on, ask me a question",
+                              })
+                            }else{
+                              recognition.stop()
+                              setIsRecording(false)
+                            }
                           }
                         }catch(error:any){
                           console.log(error)
@@ -503,9 +536,9 @@ export default function Home() {
                           })
                         }
                       }}
-                      className="w-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)] h-[50px] rounded-[50px]"
+                      className={`w-[50px] ${isMicDisabled?"bg-black hover:bg-black":"bg-[var(--primary-01)] hover:bg-[var(--primary-01)]"} h-[50px] rounded-[50px]`}
                     >
-                      <Mic className="" />
+                      {isRecording===false?(<Mic/>):(<Square strokeWidth={20}/>)}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
