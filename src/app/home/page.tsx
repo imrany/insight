@@ -82,7 +82,6 @@ export default function Home() {
     return new Blob([ab], { type: mimeString });
   }
   
-
   function readAndStoreAudio(prompt: string, response: string, id: string) {
     const text = `${prompt} ${response}`;
     const speech = new SpeechSynthesisUtterance(text);
@@ -281,6 +280,7 @@ export default function Home() {
 
   async function handleDeletePrompt(id: string) {
     try {
+      window.speechSynthesis.cancel();
       setIsLoading(true);
       togglePopover(id)
       const url = `/api/prompts/${id}`;
