@@ -7,4 +7,5 @@ export const pool=new Pool({
     password: process.env.POSTGRES_PASSWORD,
     // port:6500
     port:5432,
+    ssl:true
 })
