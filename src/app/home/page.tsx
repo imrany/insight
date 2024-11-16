@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Download, Mic, MoreHorizontal, Pause, Play, RefreshCcw, Speech, Square, Trash } from "lucide-react";
+import { Download, Expand, Mic, MoreHorizontal, Pause, Play, RefreshCcw, Speech, Square, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -432,9 +432,23 @@ export default function Home() {
                               </div> 
                               <div className="grid gap-2">
                                 <Button onClick={()=>{
-                                  togglePopover(prompt.id)
-                                  downloadAudioFile(prompt.id,prompt.response)
-                                }} variant="outline" className="flex justify-start">
+                                    if(isShowMoreId===prompt.id){
+                                      setIsShowMoreId(null)
+                                    }else{
+                                      setIsShowMoreId(prompt.id)
+                                    }
+                                  }} variant="outline" className="flex justify-start"
+                                >
+                                  <span className="flex items-center gap-1">
+                                    <Expand/>
+                                    <span>Expand</span>
+                                  </span>
+                                </Button>
+                                <Button onClick={()=>{
+                                    togglePopover(prompt.id)
+                                    downloadAudioFile(prompt.id,prompt.response)
+                                  }} variant="outline" className="flex justify-start"
+                                >
                                   <span className="flex items-center gap-1">
                                     <Download/>
                                     <span>Download</span>
@@ -590,7 +604,7 @@ export default function Home() {
           <div className="flex flex-col items-center justify-center w-screen h-screen">
             <div className="flex items-center justify-center gap-2 text-gray-600">
               <RefreshCcw className="spinner w-[18px] h-[18px]"/>
-              <p>Loading, please wait...</p>
+              <p>Loading</p>
             </div>
           </div>
         </main>
