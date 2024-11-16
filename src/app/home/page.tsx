@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Delete, Download, Mic, MoreHorizontal, Pause, Play, RefreshCcw, Speech, Square, Trash } from "lucide-react";
+import { Download, Mic, MoreHorizontal, Pause, Play, RefreshCcw, Speech, Square, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -575,8 +575,11 @@ export default function Home() {
         </main>
       ) : (
         <main className="fixed bg-[var(--body-bg)] top-0 bottom-0 right-0 left-0 z-30">
-          <div className="flex items-center justify-center w-screen h-screen">
-            <p>Loading, please wait...</p>
+          <div className="flex flex-col items-center justify-center w-screen h-screen">
+            <div className="flex items-center justify-center gap-2 text-gray-600">
+              <RefreshCcw className="spinner w-[18px] h-[18px]"/>
+              <p>Loading, please wait...</p>
+            </div>
           </div>
         </main>
       )}
