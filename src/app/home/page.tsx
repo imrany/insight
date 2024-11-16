@@ -445,7 +445,7 @@ export default function Home() {
                             })
                           }
                         }}
-                        className="w-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)] h-[50px]] rounded-[50px]"
+                        className="w-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)] h-[50px] rounded-[50px]"
                       >
                         <Mic className="" />
                       </Button>
