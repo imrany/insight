@@ -41,6 +41,7 @@ export default function AppSidebar (){
   }
 
   function logOut(){
+    window.speechSynthesis.cancel();
     localStorage.clear()
     router.push("/")
   }

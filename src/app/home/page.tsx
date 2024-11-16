@@ -383,7 +383,7 @@ export default function Home() {
                             <div className="space-y-2">
                               <h4 className="font-medium leading-none">More</h4>
                               <p className="text-sm text-muted-foreground">
-                                Set the dimensions for the layer.
+                                More actions that can be done on this audio.
                               </p>
                             </div> 
                             <div className="grid gap-2">

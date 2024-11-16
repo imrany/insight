@@ -29,7 +29,7 @@ export default function Header() {
   const links:LinkType[]=[
     {
         label:"Resources",
-        href:"/",
+        href:"/resources",
         className:"hover:text-[var(--primary-01)]",
         variant:"link"
     },
@@ -69,7 +69,7 @@ export default function Header() {
     {
         icon:(<Plus className="text-[var(--primary-01)] w-[20px] h-[20px]"/>),
         label:"More Resources",
-        href:"#",
+        href:"/resources",
         variant:"link"
     },
   ]
@@ -96,7 +96,7 @@ export default function Header() {
   })
   return (
     <>
-        <header className="font-[family-name:var(--font-geist-sans)] bg-[var(--body-bg)] z-10 fixed top-0 left-0 right-0">
+        <header className="font-[family-name:var(--font-geist-sans)] bg-[var(--body-bg)] z-50 fixed top-0 left-0 right-0">
             <nav className="flex justify-between items-center border-b-[1px] border-dashed border-[var(--primary-01)] w-screen py-2 px-4 md:px-5">
                 <Link href="/welcome" className="flex gap-2 text-[var(--primary-01)] font-semibold">
                     insight.ai
@@ -116,33 +116,37 @@ export default function Header() {
                                     <DrawerDescription hidden className="text-gray-600">Menu</DrawerDescription>
                                 </DrawerHeader>
                                 <div className="flex flex-col gap-y-4 p-4 pb-0">
-                                    {mobileLinks.map(link=>(
-                                        <Button key={link.href} onClick={handleClose} variant={link.variant} asChild>
+                                    {mobileLinks.map((link,index)=>(
+                                        <Link key={index} href={link.href}>
+                                            <Button onClick={handleClose} variant={link.variant} asChild>
+                                                <span className="flex items-center w-full">
+                                                    <span className="flex gap-2 items-center">
+                                                        {link.icon}
+                                                        <span>{link.label}</span>
+                                                    </span>
+                                                    <ChevronRight className="ml-auto w-[30px] h-[30px] text-[var(--primary-01)]"/>
+                                                </span>
+                                            </Button>
+                                        </Link>
+                                    ))}
+                                    <a target="_blank" rel="noreferrer noopener" href="mailto:imranmat254@gmail.com?subject=Mail from Insight.ai">
+                                        <Button onClick={handleClose} variant="link" asChild>
                                             <span className="flex items-center w-full">
                                                 <span className="flex gap-2 items-center">
-                                                    {link.icon}
-                                                    <Link href={link.href}>{link.label}</Link>
+                                                    <Mail className="text-[var(--primary-01)] w-[20px] h-[20px]"/>
+                                                    <span>Contact us</span>
                                                 </span>
                                                 <ChevronRight className="ml-auto w-[30px] h-[30px] text-[var(--primary-01)]"/>
                                             </span>
                                         </Button>
-                                    ))}
-                                    <Button onClick={handleClose} variant="link" asChild>
-                                        <span className="flex items-center w-full">
-                                            <span className="flex gap-2 items-center">
-                                                <Mail className="text-[var(--primary-01)] w-[20px] h-[20px]"/>
-                                                <a target="_blank" rel="noreferrer noopener" href="mailto:imranmat254@gmail.com?subject=Mail from Insight.ai">
-                                                    Contact us
-                                                </a>
-                                            </span>
-                                            <ChevronRight className="ml-auto w-[30px] h-[30px] text-[var(--primary-01)]"/>
-                                        </span>
-                                    </Button>
+                                    </a>
                                 </div>
                                 <DrawerFooter>
-                                    <Button onClick={handleClose} variant="outline" className="border-[1px] border-dashed border-[var(--primary-01)] text-[var(--primary-01)]" asChild>
-                                        <Link href="/sign-up">Get Started</Link>
-                                    </Button>
+                                    <Link href="/sign-up" className="w-full">
+                                        <Button onClick={handleClose} variant="outline" className="border-[1px] w-full border-dashed border-[var(--primary-01)] text-[var(--primary-01)]">
+                                            Get Started
+                                        </Button>
+                                    </Link>
                                     <DrawerClose asChild>
                                         <Button variant="ghost" onClick={handleClose} className="text-gray-600 hover:text-[var(--primary-01)]">Close Menu</Button>
                                     </DrawerClose>
