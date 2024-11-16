@@ -20,6 +20,19 @@ body {
   transition: width 0.3s ease-in-out;
 }
 
+.spinner{
+  animation: spin 1s linear infinite; /* Spins infinitely */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

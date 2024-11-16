@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Delete, Download, Mic, MoreHorizontal, Pause, Play, Speech, Square, Trash } from "lucide-react";
+import { Delete, Download, Mic, MoreHorizontal, Pause, Play, RefreshCcw, Speech, Square, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -452,7 +452,7 @@ export default function Home() {
                   </div>
                 ))}
               </ScrollArea>
-              <div className="fixed right-8 bottom-10 z-10">
+              <div className="fixed bg-[var(--body-bg)] rounded-[50px] right-8 bottom-10 z-10">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -483,9 +483,18 @@ export default function Home() {
                             })
                           }
                         }}
-                        className={`w-[50px] ${isMicDisabled?"bg-black hover:bg-black":"bg-[var(--primary-01)] hover:bg-[var(--primary-01)]"} h-[50px] rounded-[50px]`}
+                        className={`${isMicDisabled?"w-[150px] h-[40px] bg-black hover:bg-black":"w-[50px] h-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)]"} rounded-[50px]`}
                       >
-                        {isRecording===false?(<Mic/>):(<Square strokeWidth={20}/>)}
+                        {isRecording===false?(
+                          <>
+                            {!isMicDisabled?(<Mic/>):(
+                              <span className="flex items-center gap-2">
+                               <RefreshCcw className="spinner"/>
+                               <span>responding</span>
+                              </span>
+                            )}
+                          </>
+                        ):(<Square strokeWidth={20}/>)}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -536,9 +545,18 @@ export default function Home() {
                           })
                         }
                       }}
-                      className={`w-[50px] ${isMicDisabled?"bg-black hover:bg-black":"bg-[var(--primary-01)] hover:bg-[var(--primary-01)]"} h-[50px] rounded-[50px]`}
-                    >
-                      {isRecording===false?(<Mic/>):(<Square strokeWidth={20}/>)}
+                      className={`${isMicDisabled?"w-[150px] h-[40px] bg-black hover:bg-black":"w-[50px] h-[50px] bg-[var(--primary-01)] hover:bg-[var(--primary-01)]"} rounded-[50px]`}
+                      >
+                        {isRecording===false?(
+                          <>
+                            {!isMicDisabled?(<Mic/>):(
+                              <span className="flex items-center gap-2">
+                               <RefreshCcw className="spinner"/>
+                               <span>responding</span>
+                             </span>
+                            )}
+                          </>
+                        ):(<Square strokeWidth={20}/>)}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
