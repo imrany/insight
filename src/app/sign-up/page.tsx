@@ -21,6 +21,7 @@ export default function SignUp() {
     async function handleSignUp(e:any) {
         try{
             e.preventDefault()
+            setError("")
             if(e.target.confirm.value!==e.target.password.value){
                 setError("Password doesn't match!")
             }else{

@@ -21,6 +21,7 @@ export default function SignIn() {
     async function handleSignIn(e:any) {
         try{
             setIsDisabled(true)
+            setError("")
             e.preventDefault()
             const url="/api/auth/sign_in"
             const response=await fetch(url,{
