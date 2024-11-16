@@ -2,9 +2,7 @@ import x from 'sqlite3';
 const sqlite3=x.verbose();
 
 // Connecting Database
-// const databaseFile = __dirname + '/database.db';
-const databaseFile ="https://raw.githubusercontent.com/imrany/insight/refs/heads/main/database.db"
-export const db = new sqlite3.Database(databaseFile , (err) => {
+export const db = new sqlite3.Database("database.db" , (err) => {
     if(err){
         console.log("Error Occurred - " + err.message);
     }else{
