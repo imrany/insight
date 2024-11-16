@@ -96,15 +96,6 @@ export default function Home() {
     const destination = audioContext.createMediaStreamDestination();
     const audioChunks: Blob[] = [];
   
-    // Create a gain node to control the audio flow
-    const gainNode = audioContext.createGain();
-    gainNode.connect(destination);
-  
-    // Connect speech synthesis to AudioContext
-    speechSynthesis.speak(speech);
-    const utteranceStream = audioContext.createMediaStreamSource(destination.stream);
-    utteranceStream.connect(gainNode);
-  
     // Initialize MediaRecorder
     const mediaRecorder = new MediaRecorder(destination.stream);
   
@@ -115,16 +106,18 @@ export default function Home() {
     mediaRecorder.onstop = () => {
       const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
       const reader = new FileReader();
-  
+      reader.readAsDataURL(audioBlob);
       reader.onloadend = () => {
         const base64data = reader.result as string;
         localStorage.setItem(`speechAudio_${id}`, base64data);
         console.log(`Audio stored with ID: speechAudio_${id}`);
       };
-  
-      reader.readAsDataURL(audioBlob);
     };
   
+    //connect the speech synthesisto the audio context
+    const source=audioContext.createMediaStreamSource(destination.stream)
+    source.connect(audioContext.destination)
+
     // Start recording
     mediaRecorder.start();
   
@@ -140,6 +133,8 @@ export default function Home() {
       mediaRecorder.pause();
       console.log("Speech paused.");
     };
+
+    speechSynthesis.speak(speech);
   }
   
 
@@ -284,6 +279,10 @@ export default function Home() {
         setIsMicDisabled(false)
         console.log(parseRes.prompts);
         setPrompts(parseRes.prompts);
+        setTimeout(()=>{
+          const id:string=parseRes.prompts[parseRes.prompts.length-1].id
+          scrollToBottom(id)
+        },500)
       }
     } catch (error: any) {
       setIsMicDisabled(false)
