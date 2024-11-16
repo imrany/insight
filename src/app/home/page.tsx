@@ -22,6 +22,7 @@ export default function Home() {
   const { toast }=useToast()
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
   const [playingId, setPlayingId] = useState<string|null>(null);
+  const [isShowMoreId,setIsShowMoreId]=useState<string|null>(null)
   const [isLoading, setIsLoading] = useState(true);
   const [isMicDisabled, setIsMicDisabled] = useState(false);
   const [isRecording,setIsRecording]=useState(false)
@@ -390,69 +391,80 @@ export default function Home() {
               <ScrollArea className="h-full flex flex-col mb-[20px] gap-2 items-center justify-center md:px-[10px] md:w-[620px] w-[75vw] flex-grow">
                 {prompts.map((prompt: any) => (
                   <div
+                    onDoubleClick={()=>{
+                      if(isShowMoreId===prompt.id){
+                        setIsShowMoreId(null)
+                      }else{
+                        setIsShowMoreId(prompt.id)
+                      }
+                    }}
                     id={prompt.id}
                     key={prompt.id}
                     className={`flex my-4 p-4 ${checkEven(prompt.id)!=="even"?'bg-[#f07d30] text-white':'bg-[#f1ece8] text-gray-800'} rounded-[10px] shadow-[var(--shadow-default)] justify-center w-full`}
                   >
                     <div className="flex flex-col gap-1">
                       <p className="text-sm font-semibold">{prompt.prompt}</p>
-                      <p className="text-xs font-[family-name:var(--font-geist-mono)] pr-[50px]">
-                        {prompt.response.slice(0, 70)}
-                      </p>
+                      {isShowMoreId===prompt.id?(
+                        <p className="text-xs font-[family-name:var(--font-geist-mono) leading-5">{prompt.response}</p>
+                      ):(
+                        <p className="text-xs font-[family-name:var(--font-geist-mono) pr-[10px]">{prompt.response.slice(0, 70)}</p>
+                      )}
                     </div>
-                    <div className="ml-auto flex flex-col gap-4 items-center h-full justify-between">
-                      <Popover 
-                        key={prompt.id}
-                        open={openPopoverId === prompt.id}
-                        onOpenChange={(isOpen) => {
-                          setOpenPopoverId(isOpen ? prompt.id : null);
-                        }}
-                      >
-                        <PopoverTrigger onClick={() => togglePopover(prompt.id)}>
-                          <MoreHorizontal/>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80 scale-90 font-[family-name:var(--font-geist-sans)]">
-                          <div className="grid gap-4">
-                            <div className="space-y-2">
-                              <h4 className="font-medium leading-none">More Actions</h4>
-                              <p className="text-sm text-muted-foreground">
-                                Actions that can be done on this audio.
-                              </p>
+                    {isShowMoreId===prompt.id?(<></>):(
+                      <div className="ml-auto flex flex-col gap-4 items-center h-full justify-between">
+                        <Popover 
+                          key={prompt.id}
+                          open={openPopoverId === prompt.id}
+                          onOpenChange={(isOpen) => {
+                            setOpenPopoverId(isOpen ? prompt.id : null);
+                          }}
+                        >
+                          <PopoverTrigger onClick={() => togglePopover(prompt.id)}>
+                            <MoreHorizontal/>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80 scale-90 font-[family-name:var(--font-geist-sans)]">
+                            <div className="grid gap-4">
+                              <div className="space-y-2">
+                                <h4 className="font-medium leading-none">More Actions</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  Actions that can be done on this audio.
+                                </p>
+                              </div> 
+                              <div className="grid gap-2">
+                                <Button onClick={()=>{
+                                  togglePopover(prompt.id)
+                                  downloadAudioFile(prompt.id,prompt.response)
+                                }} variant="outline" className="flex justify-start">
+                                  <span className="flex items-center gap-1">
+                                    <Download/>
+                                    <span>Download</span>
+                                  </span>
+                                </Button>
+                                <Button onClick={()=>handleDeletePrompt(prompt.id)} variant="destructive" className="flex justify-start">
+                                  <span className="flex items-center gap-1">
+                                    <Trash/>
+                                    <span>Delete</span>
+                                  </span>
+                                </Button>
+                              </div>
                             </div> 
-                            <div className="grid gap-2">
-                              <Button onClick={()=>{
-                                togglePopover(prompt.id)
-                                downloadAudioFile(prompt.id,prompt.response)
-                              }} variant="outline" className="flex justify-start">
-                                <span className="flex items-center gap-1">
-                                  <Download/>
-                                  <span>Download</span>
-                                </span>
-                              </Button>
-                              <Button onClick={()=>handleDeletePrompt(prompt.id)} variant="destructive" className="flex justify-start">
-                                <span className="flex items-center gap-1">
-                                  <Trash/>
-                                  <span>Delete</span>
-                                </span>
-                              </Button>
-                            </div>
-                          </div> 
-                        </PopoverContent>
-                      </Popover>
+                          </PopoverContent>
+                        </Popover>
 
-                      <Button
-                        onClick={() =>
-                          handlePlayPause(prompt.prompt, prompt.response, prompt.id)
-                        }
-                        className="bg-white hover:bg-white w-[40px] h-[40px] text-black rounded-[50px]"
-                      >
-                        {playingId === prompt.id ? (
-                          <Pause className="w-[30px] h-[30px]" />
-                        ) : (
-                          <Play className="w-[30px] h-[30px]" />
-                        )}
-                      </Button>
-                    </div>
+                        <Button
+                          onClick={() =>
+                            handlePlayPause(prompt.prompt, prompt.response, prompt.id)
+                          }
+                          className="bg-white hover:bg-white w-[40px] h-[40px] text-black rounded-[50px]"
+                        >
+                          {playingId === prompt.id ? (
+                            <Pause className="w-[30px] h-[30px]" />
+                          ) : (
+                            <Play className="w-[30px] h-[30px]" />
+                          )}
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </ScrollArea>
