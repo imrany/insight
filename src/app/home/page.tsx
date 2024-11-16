@@ -222,8 +222,10 @@ export default function Home() {
         console.log(parseRes.prompts);
         setPrompts(parseRes.prompts);
         setIsLoading(false);
-        const id:string=parseRes.prompts[parseRes.prompts.length-1].id
-        scrollToBottom(id)
+        setTimeout(()=>{
+          const id:string=parseRes.prompts[parseRes.prompts.length-1].id
+          scrollToBottom(id)
+        },500)
       }
     } catch (error: any) {
       console.log(error.message);
