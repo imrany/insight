@@ -1,7 +1,7 @@
 import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken"
 import { NextResponse } from 'next/server';
-import { db } from "../../db";
+import { pool } from "../../db";
 
 const generateUserToken=(id:string)=>{
     return sign({id},`${process.env.JWT_SECRET}`,{
@@ -13,7 +13,7 @@ async function selectUser(
     email: string,
 ) {
     return new Promise((resolve, reject) => {
-      db.all(
+      pool.query(
         "SELECT * FROM users WHERE email = $1;",
         [email],
         (error: any, data: any) => {

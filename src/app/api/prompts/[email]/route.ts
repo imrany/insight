@@ -1,11 +1,11 @@
-import { db } from "../../db";
+import { pool } from "../../db";
 import { NextRequest,NextResponse } from "next/server";
 
 async function selectPrompts(
   email: string,
 ) {
   return new Promise((resolve, reject) => {
-    db.all(
+    pool.query(
       "SELECT * FROM prompts WHERE email = $1 ORDER BY created_at ASC;",
       [email],
       (error: any, data: any) => {

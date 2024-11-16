@@ -1,6 +1,6 @@
 import {genSalt, hash} from "bcryptjs";
 import { sign } from "jsonwebtoken"
-import { db } from "../../db";
+import { pool } from "../../db";
 import { NextResponse } from 'next/server';
 
 const generateUserToken=(id:string)=>{
@@ -15,7 +15,7 @@ async function insertUser(
     hashedPassword: string
 ) {
     return new Promise((resolve, reject) => {
-      db.all(
+      pool.query(
         "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *;",
         [username, email, hashedPassword],
         (error: any, data: any) => {

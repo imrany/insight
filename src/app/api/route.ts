@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as marked from "marked";
-import { db } from "./db";
+import { pool } from "./db";
 import { NextResponse } from "next/server";
 
 const apiKey:any=process.env.API_KEY;
@@ -12,7 +12,7 @@ async function insertPrompt(
     email: string
 ) {
     return new Promise((resolve, reject) => {
-      db.all("INSERT INTO prompts (prompt,response, email) VALUES ($1, $2, $3) RETURNING *;",
+      pool.query("INSERT INTO prompts (prompt,response, email) VALUES ($1, $2, $3) RETURNING *;",
         [prompt,response, email],
         (error: any, data: any) => {
           if (error) {
