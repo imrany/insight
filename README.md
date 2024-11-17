@@ -31,16 +31,19 @@ accuracy to the subject matter.
 ### Demo video
 You can view our demo on youtube, [https://youtu.be/zw7Cu6W9YCY][https://youtu.be/zw7Cu6W9YCY]
 - Sign in page
-![sign in page](./docs/login-page.jpg)
+<img src="./docs/login-page.jpg" alt="sign in page" width="500" height="500" style="object-fit: contain;">
 
 - Home page
-![home page](./docs/home-page.jpg)
+<img src="./docs/home-page.jpg" alt="home page" width="500" height="500" style="object-fit: contain;">
 
 - How to download a chat as audio
-![How to download](./docs/popover.jpg)
+<img src="./docs/popover.jpg" alt="How to download" width="500" height="500" style="object-fit: contain;">
 
 - Short demo video
-![]
+<video width="640" height="360" style="object-fit: contain;" controls>
+  <source src="./docs/short-demo.mp4" type="video/mp4" >
+  Your browser does not support the video tag.
+</video>
 
 
 ### How to setup and run it locally
