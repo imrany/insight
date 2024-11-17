@@ -286,11 +286,11 @@ export default function Home() {
         console.log(parseRes.prompts);
         setPrompts(parseRes.prompts);
         setTimeout(()=>{
-          const id:string=parseRes.prompts[parseRes.prompts.length-1].id
-          const lastPrompt:string=parseRes.prompts[parseRes.prompts.length-1].prompt
-          const lastResponse:string=parseRes.prompts[parseRes.prompts.length-1].response
-          scrollToBottom(id)
-          handlePlayPause(lastPrompt,lastResponse,id)
+          const lastest:any=parseRes.prompts[parseRes.prompts.length-1]
+          // scrolls to the lastest response
+          scrollToBottom(lastest.id)
+          //reads out the lastest response to the user
+          handlePlayPause(lastest.prompt,lastest.response,lastest.id)
         },500)
       }
     } catch (error: any) {
