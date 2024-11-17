@@ -61,8 +61,8 @@ export default function Home() {
       const link = document.createElement('a');
   
       link.href = audioUrl;
-      link.target="_blank"
-      // link.download = `${response.slice(0, 20)}.wav`;
+      // link.target="_blank"
+      link.download = `${response.slice(0, 20)}.wav`;
       link.click();
   
       console.log("Audio file downloaded.");
