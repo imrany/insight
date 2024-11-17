@@ -287,10 +287,9 @@ export default function Home() {
         setPrompts(parseRes.prompts);
         setTimeout(()=>{
           const id:string=parseRes.prompts[parseRes.prompts.length-1].id
-          const lastPrompt:string=parseRes.prompts[parseRes.prompts.length-1].prompt
           const lastResponse:string=parseRes.prompts[parseRes.prompts.length-1].response
           scrollToBottom(id)
-          readAndStoreAudio(lastPrompt,lastResponse,id)
+          textToSpeech(lastResponse)
         },500)
       }
     } catch (error: any) {
