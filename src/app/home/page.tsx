@@ -53,13 +53,43 @@ export default function Home() {
     window.speechSynthesis.speak(speech);
   }
 
-  function textToSpeechWithHighlight(text: string, outputElementId: string) {
+  function textToSpeechWithHighlight(text: string, outputElementId: string, cardId:string) {
     const speech = new SpeechSynthesisUtterance(text);
   
     speech.lang = "en-US";
     speech.rate = 1;
     speech.pitch = 1;
   
+    // Create AudioContext
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const destination = audioContext.createMediaStreamDestination();
+    const audioChunks: Blob[] = [];
+  
+    // Initialize MediaRecorder
+    const mediaRecorder = new MediaRecorder(destination.stream);
+  
+    mediaRecorder.ondataavailable = (event) => {
+      audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = () => {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+      const reader = new FileReader();
+      reader.readAsDataURL(audioBlob);
+      reader.onloadend = () => {
+        const base64data = reader.result as string;
+        localStorage.setItem(`speechAudio_${cardId}`, base64data);
+        console.log(`Audio stored with ID: speechAudio_${cardId}`);
+      };
+    };
+  
+    //connect the speech synthesisto the audio context
+    const source=audioContext.createMediaStreamSource(destination.stream)
+    source.connect(audioContext.destination)
+
+    // Start recording
+    mediaRecorder.start();
+
     const outputElement = document.getElementById(outputElementId);
     if (!outputElement) {
       console.error("Output element not found");
@@ -98,6 +128,19 @@ export default function Home() {
       wordElements.forEach((word) => word.classList.remove("rounded-sm","bg-black", "text-sm","text-white"));
     });
   
+    // Stop recording when the speech ends
+    speech.onend = () => {
+      mediaRecorder.stop();
+      audioContext.close();
+      setPlayingId(null)
+    };
+  
+    // Handle pauses (optional)
+    speech.onpause = () => {
+      mediaRecorder.pause();
+      console.log("Speech paused.");
+    };
+
     // Speak the text
     window.speechSynthesis.speak(speech);
   }
@@ -139,60 +182,6 @@ export default function Home() {
     return new Blob([ab], { type: mimeString });
   }
   
-  function readAndStoreAudio(prompt: string, response: string, id: string) {
-    const text = `${prompt} ${response}`;
-    const speech = new SpeechSynthesisUtterance(text);
-    speech.lang = 'en-US';
-    speech.rate = 1;
-    speech.pitch = 1;
-  
-    // Create AudioContext
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const destination = audioContext.createMediaStreamDestination();
-    const audioChunks: Blob[] = [];
-  
-    // Initialize MediaRecorder
-    const mediaRecorder = new MediaRecorder(destination.stream);
-  
-    mediaRecorder.ondataavailable = (event) => {
-      audioChunks.push(event.data);
-    };
-  
-    mediaRecorder.onstop = () => {
-      const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-      const reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
-      reader.onloadend = () => {
-        const base64data = reader.result as string;
-        localStorage.setItem(`speechAudio_${id}`, base64data);
-        console.log(`Audio stored with ID: speechAudio_${id}`);
-      };
-    };
-  
-    //connect the speech synthesisto the audio context
-    const source=audioContext.createMediaStreamSource(destination.stream)
-    source.connect(audioContext.destination)
-
-    // Start recording
-    mediaRecorder.start();
-  
-    // Stop recording when the speech ends
-    speech.onend = () => {
-      mediaRecorder.stop();
-      audioContext.close();
-      setPlayingId(null)
-    };
-  
-    // Handle pauses (optional)
-    speech.onpause = () => {
-      mediaRecorder.pause();
-      console.log("Speech paused.");
-    };
-
-    speechSynthesis.speak(speech);
-  }
-  
-
   let recognition: {
     new (): any;
     continuous: boolean;
@@ -215,6 +204,9 @@ export default function Home() {
 
       recognition.onstart = () => {
         console.log("Ready to listen");
+        //closes the expands card and show the pause icon when microphone is ready to listen
+        setIsShowMoreId(null)
+        setPlayingId(null);
       };
 
       const voiceInputs:string[]=[]
@@ -336,13 +328,11 @@ export default function Home() {
         setPrompts(parseRes.prompts);
         const lastest:any=parseRes.prompts[parseRes.prompts.length-1]
         //expands, reads out and hightlight the read out text
-        setIsShowMoreId(lastest.id) //expands
+        setIsShowMoreId(lastest.id) //expands the card with the id matches the arg
         setTimeout(()=>{
-          // scrolls to the lastest response
-          scrollToBottom(lastest.id)
-          textToSpeechWithHighlight(lastest.response,`expanded_text_${lastest.id}`) //hightlights the read out text
-          //reads out the lastest response to the user
-          // handlePlayPause(lastest.prompt,lastest.response,lastest.id)
+          scrollToBottom(lastest.id) // scrolls to the lastest response
+          setPlayingId(lastest.id); //shows the pause icon on the card play button
+          textToSpeechWithHighlight(lastest.response,`expanded_text_${lastest.id}`,lastest.id) //hightlights the read out text
         },500)
       }
     } catch (error: any) {
@@ -392,17 +382,21 @@ export default function Home() {
     }
   }
 
-  const handlePlayPause = (prompt:string, response:string, id:string) => {
-    if (playingId === id) {
+  function handlePlayPause(response:string,textId:string,cardId:string){
+    if(playingId === cardId){
       window.speechSynthesis.cancel();
       setPlayingId(null);
-    } else {
+      setIsShowMoreId(null) //expands
+    }else{
       window.speechSynthesis.cancel();
-      readAndStoreAudio(prompt,response,id)
+      setPlayingId(cardId);
+      setIsShowMoreId(cardId) //expands
       // textToSpeech(response);
-      setPlayingId(id);
+      setTimeout(()=>{
+        textToSpeechWithHighlight(response,textId,cardId) //hightlights the read out text
+      },500)
     }
-  };
+  }
 
   function checkEven(a:number){
     const c= a%2
@@ -522,9 +516,9 @@ export default function Home() {
                         </Popover>
 
                         <Button
-                          onClick={() =>
-                            handlePlayPause(prompt.prompt, prompt.response, prompt.id)
-                          }
+                          onClick={() =>{
+                            handlePlayPause(prompt.response,`expanded_text_${prompt.id}`,prompt.id)
+                          }}
                           className="bg-white hover:bg-white w-[40px] h-[40px] text-black rounded-[50px]"
                         >
                           {playingId === prompt.id ? (
