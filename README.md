@@ -28,6 +28,21 @@ We choose the open category of the hackathon.
 accuracy to the subject matter.
 
 
+### Demo video
+You can view our demo on youtube, [https://youtu.be/zw7Cu6W9YCY][https://youtu.be/zw7Cu6W9YCY]
+- Sign in page
+![sign in page](./docs/login-page.jpg)
+
+- Home page
+![home page](./docs/home-page.jpg)
+
+- How to download a chat as audio
+![How to download](./docs/popover.jpg)
+
+- Short demo video
+![]
+
+
 ### How to setup and run it locally
 1. Ensure you have **Nodejs**, if not download here [https://nodejs.org/en/download/package-manager](https://nodejs.org/en/download/package-manager)
 
