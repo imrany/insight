@@ -1,13 +1,18 @@
-### Insight.ai
-Insight.ai is an AI chatbot that allows users to enter prompts using speech rather than text.
+### Insight
+Insight is an AI chatbot that allows users to enter prompts using speech rather than text.
 It uses **Gemini** under the hood to give back responses with the user can listen to or download a an audio file fo later.
 
 ### Why did we chose voice input only rather than both text and voice input
 We've noticed a trend in AI chatbot like **ChatGPT** where users interacts with it mainly through text input, this can 
-limit people living with low or lack of vision and the elderly. Therefore we chose voice input for **insight.ai**. 
+limit people living with low or lack of vision and the elderly. Therefore we chose voice input for **insight**. 
 It can be used for assistance with general questions like *What's the recipe of chocolate cake...?* and other genral questions.
 
 We've combine both speech and generative ai to create this program.
+
+### Challenge 
+We choose the open category of the hackathon.
+#### Open category 🌟
+    Feeling adventurous? Build anything that combines two or more modalities—go wild with your ideas! Whether it's voice-controlled art generators or AI-powered virtual assistants, the only limit is your imagination.
 
 ### Features 🚀
 - Speech recognition or input: Using `Web SpeechRecognition`
@@ -17,7 +22,9 @@ We've combine both speech and generative ai to create this program.
 
     Why this approach is not compute intensive and cost effective since some processes like text-to-speech is handled on the client side rathen than on the server-side (our side)
 
-- Intelligent: We've integrate insight.ai with **Gemini**, with this integration it can response fast and with nearly
+- Download audio files: Users would able to store and download audio files of their prompts/question and responses to later.
+
+- Intelligent: We've integrate insight with **Gemini**, with this integration it can response fast and with nearly
 accuracy to the subject matter.
 
 
