@@ -29,7 +29,7 @@ accuracy to the subject matter.
 
 
 ### Demo video
-You can view our demo on youtube, [https://youtu.be/zw7Cu6W9YCY][https://youtu.be/zw7Cu6W9YCY]
+You can view our demo on youtube, [https://youtu.be/zw7Cu6W9YCY](https://youtu.be/zw7Cu6W9YCY)
 - Sign in page
 <img src="./docs/login-page.jpg" alt="sign in page" width="500" height="600" style="object-fit: cover;">
 
