@@ -31,13 +31,13 @@ accuracy to the subject matter.
 ### Demo video
 You can view our demo on youtube, [https://youtu.be/zw7Cu6W9YCY][https://youtu.be/zw7Cu6W9YCY]
 - Sign in page
-<img src="./docs/login-page.jpg" alt="sign in page" width="500" height="500" style="object-fit: contain;">
+<img src="./docs/login-page.jpg" alt="sign in page" width="500" height="600" style="object-fit: cover;">
 
 - Home page
-<img src="./docs/home-page.jpg" alt="home page" width="500" height="500" style="object-fit: contain;">
+<img src="./docs/home-page.jpg" alt="home page" width="500" height="600" style="object-fit: cover;">
 
 - How to download a chat as audio
-<img src="./docs/popover.jpg" alt="How to download" width="500" height="500" style="object-fit: contain;">
+<img src="./docs/popover.jpg" alt="How to download" width="500" height="600" style="object-fit: cover;">
 
 - Short demo video
 <video width="640" height="360" style="object-fit: contain;" controls>
