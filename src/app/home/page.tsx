@@ -287,9 +287,10 @@ export default function Home() {
         setPrompts(parseRes.prompts);
         setTimeout(()=>{
           const id:string=parseRes.prompts[parseRes.prompts.length-1].id
+          const lastPrompt:string=parseRes.prompts[parseRes.prompts.length-1].prompt
           const lastResponse:string=parseRes.prompts[parseRes.prompts.length-1].response
           scrollToBottom(id)
-          textToSpeech(lastResponse)
+          handlePlayPause(lastPrompt,lastResponse,id)
         },500)
       }
     } catch (error: any) {
