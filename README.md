@@ -1,5 +1,5 @@
 ### Insight
-Insight is an AI chatbot that allows users to enter prompts using speech rather than text.
+Insight is an AI chatbot built in **Nextjs** that allows users to enter prompts using speech rather than text.
 It uses **Gemini** under the hood to give back responses with the user can listen to or download a an audio file fo later.
 
 ### Why did we chose voice input only rather than both text and voice input
@@ -9,7 +9,7 @@ It can be used for assistance with general questions like *What's the recipe of 
 
 We've combine both speech and generative ai to create this program.
 
-### Challenge 
+### Challenge statetement
 We choose the open category of the hackathon.
 #### Open category 🌟
     Feeling adventurous? Build anything that combines two or more modalities—go wild with your ideas! Whether it's voice-controlled art generators or AI-powered virtual assistants, the only limit is your imagination.
@@ -22,7 +22,7 @@ We choose the open category of the hackathon.
 
     Why this approach is not compute intensive and cost effective since some processes like text-to-speech is handled on the client side rathen than on the server-side (our side)
 
-- Download audio files: Users would able to store and download audio files of their prompts/question and responses to later.
+- Download audio files: Users would able to store and download audio files of their prompts and responses to later.
 
 - Intelligent: We've integrate insight with **Gemini**, with this integration it can response fast and with nearly
 accuracy to the subject matter.
