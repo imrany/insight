@@ -541,7 +541,7 @@ export default function Home() {
                 <div>
 -                  <Speech className="w-[40px] h-[40px]" />
 -                </div>
-                <p className="md:text-3xl text-2xl text-[var(--primary-01)] font-semibold text-center">
+                <p className="md:text-3xl max-md:w-[80%] text-2xl text-[var(--primary-01)] font-semibold text-center">
                   {`${userData.username}, it's great to see you`}
                 </p>
                 <p className="text-gray-500 text-sm text-center">
