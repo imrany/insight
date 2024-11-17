@@ -54,7 +54,18 @@ npm run dev
 
 6. Open browser to [http://localhost:3000](http://localhost:3000)
 
+7. You have to **Create an account** by clicking the `Get started` button 
+or you can sign in using my credentials
+    ```
+    email: user1@gmail.com
+    password: 12345678
+    ```
 
+8. Start by entering a prompt by pressing the `Microphone` button.
+
+9. Once your voice prompt is recorded, you will receive a response which you can play or read by `double tapping` or `expanding` the card.
+
+10. If you need any help, reach out here [imranmat254@gmail.com](mailto:imranmat254@gmail.com)
 
 ### Live demo 🌏
 Visit [https://insight-ai-ecru.vercel.app](https://insight-ai-ecru.vercel.app)
