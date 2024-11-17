@@ -53,6 +53,55 @@ export default function Home() {
     window.speechSynthesis.speak(speech);
   }
 
+  function textToSpeechWithHighlight(text: string, outputElementId: string) {
+    const speech = new SpeechSynthesisUtterance(text);
+  
+    speech.lang = "en-US";
+    speech.rate = 1;
+    speech.pitch = 1;
+  
+    const outputElement = document.getElementById(outputElementId);
+    if (!outputElement) {
+      console.error("Output element not found");
+      return;
+    }
+  
+    // Split text into words and wrap each in a span
+    const words = text.split(" ");
+    outputElement.innerHTML = words
+      .map((word) => `<span class="word px-1">${word}</span>`)
+      .join(" ");
+  
+    const wordElements = outputElement.querySelectorAll(".word");
+  
+    let wordIndex = 0;
+  
+    // Add event listener for word boundaries
+    speech.addEventListener("boundary", (event) => {
+      if (event.name === "word") {
+        // Remove highlight from the previous word
+        if (wordIndex > 0) {
+          wordElements[wordIndex - 1].classList.remove("rounded-sm","bg-black", "text-sm","text-white");
+        }
+  
+        // Highlight the current word
+        if (wordIndex < wordElements.length) {
+          wordElements[wordIndex].classList.add("rounded-sm","bg-black", "text-sm","text-white");
+        }
+  
+        wordIndex++;
+      }
+    });
+  
+    speech.addEventListener("end", () => {
+      // Clean up highlight after speech ends
+      wordElements.forEach((word) => word.classList.remove("rounded-sm","bg-black", "text-sm","text-white"));
+    });
+  
+    // Speak the text
+    window.speechSynthesis.speak(speech);
+  }
+  
   function downloadAudioFile(id: string, response: string) {
     const base64data = localStorage.getItem(`speechAudio_${id}`);
     if (base64data) {
@@ -285,12 +334,15 @@ export default function Home() {
         setIsMicDisabled(false)
         console.log(parseRes.prompts);
         setPrompts(parseRes.prompts);
+        const lastest:any=parseRes.prompts[parseRes.prompts.length-1]
+        //expands, reads out and hightlight the read out text
+        setIsShowMoreId(lastest.id) //expands
         setTimeout(()=>{
-          const lastest:any=parseRes.prompts[parseRes.prompts.length-1]
           // scrolls to the lastest response
           scrollToBottom(lastest.id)
+          textToSpeechWithHighlight(lastest.response,`expanded_text_${lastest.id}`) //hightlights the read out text
           //reads out the lastest response to the user
-          handlePlayPause(lastest.prompt,lastest.response,lastest.id)
+          // handlePlayPause(lastest.prompt,lastest.response,lastest.id)
         },500)
       }
     } catch (error: any) {
@@ -408,7 +460,7 @@ export default function Home() {
                     <div className="flex flex-col gap-1">
                       <p className="text-sm font-semibold">{prompt.prompt}</p>
                       {isShowMoreId===prompt.id?(
-                        <p className="text-xs font-[family-name:var(--font-geist-mono) leading-5">{prompt.response}</p>
+                        <p id={`expanded_text_${prompt.id}`} className="text-xs font-[family-name:var(--font-geist-mono) leading-5">{prompt.response}</p>
                       ):(
                         <p className="text-xs font-[family-name:var(--font-geist-mono) pr-[10px]">{prompt.response.slice(0, 70)}</p>
                       )}
